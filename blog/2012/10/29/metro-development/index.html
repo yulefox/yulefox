@@ -1,0 +1,462 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Win8 应用程序开发 - Fox's Blog</title>
+  <meta name="author" content="Yule Fox">
+
+  
+  <meta name="description" content="使用 C++ 创建你的第一个 Windows 应用商店应用
+开发一款专为 Win8 设计的博客阅读主题（使用 JS）。 花点时间，深入了解一下 C++/CX 视图驱动导航比按钮驱动导航要自然，可以表达的信息也更多。 XAML XAML（eXtensible Application Markup &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://mindumper.com/blog/2012/10/29/metro-development/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Fox's Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Fox's Blog</a></h1>
+  
+    <h2>A Repository of Documents.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:mindumper.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Win8 应用程序开发</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-29T00:00:00+08:00" pubdate data-updated="true">Oct 29<span>th</span>, 2012</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><a href="http://msdn.microsoft.com/zh-CN/library/windows/apps/xaml/hh465045">使用 C++ 创建你的第一个 Windows 应用商店应用</a>
+开发一款专为 Win8 设计的博客阅读主题（使用 JS）。</p>
+
+<p>花点时间，深入了解一下 <a href="http://msdn.microsoft.com/zh-CN/library/windows/apps/xaml/hh699871">C++/CX</a></p>
+
+<p>视图驱动导航比按钮驱动导航要自然，可以表达的信息也更多。</p>
+
+<h2>XAML</h2>
+
+<p>XAML（eXtensible Application Markup Language）基于 XML，遵循 XML 语法。</p>
+
+<p>手动编写 XAML 代码，可以更好的熟悉 XAML 结构。</p>
+
+<h2>思路</h2>
+
+<p>从 XML 加载数据，用于 XAML 的数据显示。</p>
+
+<p>VS 2012 可直接读写 XML 文档。</p>
+
+<p>XML 与 yaml 可以互相转换。</p>
+
+<h3>导航</h3>
+
+<h4>网格视图</h4>
+
+<ul>
+<li>目录信息: DirectoryInfo
+
+<ul>
+<li>名称: Name</li>
+<li>描述: Description</li>
+<li>资源数: ResourceSize</li>
+<li>大小: Size</li>
+<li>最后更新时间: LastUpdateTime</li>
+</ul>
+</li>
+</ul>
+
+
+<h4>资源列表视图</h4>
+
+<ul>
+<li><p>资源信息: ResourceInfo</p>
+
+<ul>
+<li>图标: Icon</li>
+<li>名称: Name</li>
+<li>索引值: Index</li>
+<li>描述: Description</li>
+<li>大小: Size</li>
+<li>引用计数: ReferenceCount</li>
+<li>最后更新时间: LastUpdateTime</li>
+</ul>
+</li>
+<li><p>资源详细信息</p>
+
+<ul>
+<li>引用列表: ReferenceList</li>
+</ul>
+</li>
+</ul>
+
+
+<h4>索引列表视图</h4>
+
+<ul>
+<li>索引信息: IndexInfo
+
+<ul>
+<li>名称: Name</li>
+<li>索引值: Index</li>
+<li>描述: Description</li>
+<li>依赖列表: DependenceList</li>
+<li>引用计数: ReferenceCount</li>
+<li>最后更新时间: LastUpdateTime</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'>    <span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Champions</span> <span class="na">Title=</span><span class="s">&quot;Champions Overview (of LOL)&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Champion</span> <span class="na">Name=</span><span class="s">&quot;Akali&quot;</span> <span class="na">Image=</span><span class="s">&quot;Assets/Images/Akali_Splash_0.jpg&quot;</span>
+</span><span class='line'>              <span class="na">Updated=</span><span class="s">&quot;2012-11-03&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;Content&gt;</span>
+</span><span class='line'>        关于该英雄的详细信息。
+</span><span class='line'>      <span class="nt">&lt;/Content&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;Abilities&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;Ability</span> <span class="na">Name=</span><span class="s">&quot;Q&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;Ability</span> <span class="na">Name=</span><span class="s">&quot;W&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;Ability</span> <span class="na">Name=</span><span class="s">&quot;E&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;Ability</span> <span class="na">Name=</span><span class="s">&quot;R&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/Abilities&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/Champion&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Champion</span> <span class="na">Name=</span><span class="s">&quot;Annie&quot;</span> <span class="na">Image=</span><span class="s">&quot;Assets/Images/Annie_Splash_0.jpg&quot;</span>
+</span><span class='line'>              <span class="na">Updated=</span><span class="s">&quot;2012-11-03&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;Content&gt;</span>
+</span><span class='line'>        关于该英雄的详细信息。
+</span><span class='line'>      <span class="nt">&lt;/Content&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/Champion&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Champion</span> <span class="na">Name=</span><span class="s">&quot;Yeti&quot;</span> <span class="na">Image=</span><span class="s">&quot;Assets/Images/Yeti_Splash_0.jpg&quot;</span>
+</span><span class='line'>              <span class="na">Updated=</span><span class="s">&quot;2012-11-03&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;Content&gt;</span>
+</span><span class='line'>        关于该英雄的详细信息。
+</span><span class='line'>      <span class="nt">&lt;/Content&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/Champion&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/Champions&gt;</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>异步编程</h2>
+
+<p>lambda 表达式</p>
+
+<h2>任务并行</h2>
+
+<p><a href="http://msdn.microsoft.com/zh-cn/library/windows/apps/xaml/hh454036.aspx">将应用程序打包</a></p>
+
+<p>StandardStyles.xaml</p>
+
+<p>默认情况下，可能很多 Style 是被注释了的，需要的话，取消注释即可。</p>
+
+<h2>访问 SkyDrive</h2>
+
+<p>Metro 应用访问 SkeyDrive 等 Live 服务，需要具有应用程序包 ID。</p>
+
+<ul>
+<li>唯一的程序包名称和发布者，二者结合称为应用程序包 ID。</li>
+<li>唯一的标识符，称为客户端 ID。</li>
+<li>重定向域，这是 API 在需要直接与应用或应用的附属网站交换令牌、数据和消息时可以使用的域。</li>
+<li>唯一的密码，称为客户端密钥。</li>
+</ul>
+
+
+<h2>HTTP 基本请求模式</h2>
+
+<p>HTTP 协议的一部分：<a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html">RFC 2616 Sec.5</a>。</p>
+
+<h2>访问 GitHub</h2>
+
+<p><a href="http://www.oschina.net/question/12_57382">设计 Metro 风格的 GitHub for Windows</a></p>
+
+<h2>为 GitHub 提供 Web 服务</h2>
+
+<h2>JSON</h2>
+
+<p><a href="http://tools.ietf.org/html/rfc4627">JSON</a></p>
+
+<p>新浪微博可以一仿。</p>
+
+<h2>coco2d-x</h2>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Yule Fox</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-29T00:00:00+08:00" pubdate data-updated="true">Oct 29<span>th</span>, 2012</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://mindumper.com/blog/2012/10/29/metro-development/" data-via="yulefox" data-counturl="http://mindumper.com/blog/2012/10/29/metro-development/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/10/25/tut/" title="Previous Post: TUT 初探">&laquo; TUT 初探</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/11/08/db/" title="Next Post: 数据库模块">数据库模块 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/12/24/fog/">视野</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/11/08/value/">Values & Object</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/11/08/db/">数据库模块</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/10/29/metro-development/">Win8 应用程序开发</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/10/25/tut/">TUT 初探</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/yulefox">@yulefox</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'yulefox',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("yulefox", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/yulefox" class="twitter-follow-button" data-show-count="false">Follow @yulefox</a>
+  
+</section>
+
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/yulefox@gmail.com?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Yule Fox -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'mindumper';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

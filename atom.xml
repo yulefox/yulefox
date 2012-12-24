@@ -1,108 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
 
-<!DOCTYPE html>
-<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
-<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
-<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <title>Fox's Blog</title>
-  <meta name="author" content="Yule Fox">
-
-  
-  <meta name="description" content="视野规则 最简单的视野实现是以对象坐标为圆心的一个圆形区域。为减轻服务器负载，服务器端视野的计算以格子为单位。
-视野外的对象不可见，同一阵营的对象共享视野（通常情况下互相可见），不同阵营的对象无法共享视野。
-视野可能因下面的遮挡、开启规则而改变 1
-2
-3
-4
-5
-6 enum FogMode &hellip;">
-  
-
-  <!-- http://t.co/dKP3o1e -->
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  
-  <link rel="canonical" href="http://mindumper.com/">
-  <link href="/favicon.png" rel="icon">
-  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <link href="/atom.xml" rel="alternate" title="Fox's Blog" type="application/atom+xml">
-  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-
-  
-
-</head>
-
-<body   >
-  <header role="banner"><hgroup>
-  <h1><a href="/">Fox's Blog</a></h1>
-  
-    <h2>A Repository of Documents.</h2>
-  
-</hgroup>
-
-</header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-  
-</ul>
-  
-<form action="http://google.com/search" method="get">
-  <fieldset role="search">
-    <input type="hidden" name="q" value="site:mindumper.com" />
-    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
-  </fieldset>
-</form>
-  
-<ul class="main-navigation">
-  <li><a href="/">Blog</a></li>
-  <li><a href="/blog/archives">Archives</a></li>
-</ul>
-
-</nav>
-  <div id="main">
-    <div id="content">
-      <div class="blog-index">
-  
-  
-  
-    <article>
-      
-  <header>
+  <title><![CDATA[Fox's Blog]]></title>
+  <link href="http://mindumper.com/atom.xml" rel="self"/>
+  <link href="http://mindumper.com/"/>
+  <updated>2012-12-24T11:19:36+08:00</updated>
+  <id>http://mindumper.com/</id>
+  <author>
+    <name><![CDATA[Yule Fox]]></name>
     
-      <h1 class="entry-title"><a href="/blog/2012/12/24/fog/">视野</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
 
   
-
-
-<time datetime="2012-12-24T00:00:00+08:00" pubdate data-updated="true">Dec 24<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/12/24/fog/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>视野规则</h2>
+  <entry>
+    <title type="html"><![CDATA[视野]]></title>
+    <link href="http://mindumper.com/blog/2012/12/24/fog/"/>
+    <updated>2012-12-24T00:00:00+08:00</updated>
+    <id>http://mindumper.com/blog/2012/12/24/fog</id>
+    <content type="html"><![CDATA[<h2>视野规则</h2>
 
 <ul>
 <li>最简单的视野实现是以对象坐标为圆心的一个圆形区域。为减轻服务器负载，服务器端视野的计算以格子为单位。</li>
@@ -383,44 +299,15 @@
 <h2>网络通信实现</h2>
 
 <p>视野变化仅影响客户端显示及玩家游戏感受，对于服务器逻辑没有影响。</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/11/08/value/">Values & Object</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-11-08T00:00:00+08:00" pubdate data-updated="true">Nov 8<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/11/08/value/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2><code>Values</code> 与 <code>Object</code> 派生体系</h2>
+  <entry>
+    <title type="html"><![CDATA[Values & Object]]></title>
+    <link href="http://mindumper.com/blog/2012/11/08/value/"/>
+    <updated>2012-11-08T00:00:00+08:00</updated>
+    <id>http://mindumper.com/blog/2012/11/08/value</id>
+    <content type="html"><![CDATA[<h2><code>Values</code> 与 <code>Object</code> 派生体系</h2>
 
 <p>所有 <code>Object</code> 及其派生类的逻辑数据均存储在一个 <code>Values</code> 容器（<code>_properties</code>）中，采用 key-value 形式的突出优点是灵活性高，但缺点是每次访问时需要查找，效率不高。针对这一点，有两种优化思路：</p>
 
@@ -521,44 +408,15 @@
 <h3>关于 <code>Object</code> 派生体系的序列化与反序列化</h3>
 
 <p><em>警告</em>：由于 <code>Object</code> 及其派生类对 <code>_properties</code> 具有较强依赖，因此所有派生类的 <code>Serialize()</code> 及 <code>Deserialize()</code> 实现必须调用其父类的实现。否则，容易引起逻辑数据错误及内存使用错误。</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/11/08/db/">数据库模块</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-11-08T00:00:00+08:00" pubdate data-updated="true">Nov 8<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/11/08/db/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>当前实现的数据库模块仅支持 SQLite3。</p>
+  <entry>
+    <title type="html"><![CDATA[数据库模块]]></title>
+    <link href="http://mindumper.com/blog/2012/11/08/db/"/>
+    <updated>2012-11-08T00:00:00+08:00</updated>
+    <id>http://mindumper.com/blog/2012/11/08/db</id>
+    <content type="html"><![CDATA[<p>当前实现的数据库模块仅支持 SQLite3。</p>
 
 <h2>配置约定</h2>
 
@@ -764,44 +622,15 @@
 
 
 <p>如示例所示，对于自定义数据库操作命令，并不严格要求使用 <code>db.table.command</code> 的点分形式，但点分形式仍然是推荐做法。</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/10/29/metro-development/">Win8 应用程序开发</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-10-29T00:00:00+08:00" pubdate data-updated="true">Oct 29<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/10/29/metro-development/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><a href="http://msdn.microsoft.com/zh-CN/library/windows/apps/xaml/hh465045">使用 C++ 创建你的第一个 Windows 应用商店应用</a>
+  <entry>
+    <title type="html"><![CDATA[Win8 应用程序开发]]></title>
+    <link href="http://mindumper.com/blog/2012/10/29/metro-development/"/>
+    <updated>2012-10-29T00:00:00+08:00</updated>
+    <id>http://mindumper.com/blog/2012/10/29/metro-development</id>
+    <content type="html"><![CDATA[<p><a href="http://msdn.microsoft.com/zh-CN/library/windows/apps/xaml/hh465045">使用 C++ 创建你的第一个 Windows 应用商店应用</a>
 开发一款专为 Win8 设计的博客阅读主题（使用 JS）。</p>
 
 <p>花点时间，深入了解一下 <a href="http://msdn.microsoft.com/zh-CN/library/windows/apps/xaml/hh699871">C++/CX</a></p>
@@ -981,44 +810,15 @@
 <p>新浪微博可以一仿。</p>
 
 <h2>coco2d-x</h2>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/10/25/tut/">TUT 初探</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-10-25T00:00:00+08:00" pubdate data-updated="true">Oct 25<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/10/25/tut/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>之前写代码时，都是根据自己需要编写一个简易的单元测试框架。最近在读 <a href="http://vld.codeplex.com/">VLD</a> 源码时，了解了一下 <a href="http://tut-framework.sourceforge.net/">TUT</a>。</p>
+  <entry>
+    <title type="html"><![CDATA[TUT 初探]]></title>
+    <link href="http://mindumper.com/blog/2012/10/25/tut/"/>
+    <updated>2012-10-25T00:00:00+08:00</updated>
+    <id>http://mindumper.com/blog/2012/10/25/tut</id>
+    <content type="html"><![CDATA[<p>之前写代码时，都是根据自己需要编写一个简易的单元测试框架。最近在读 <a href="http://vld.codeplex.com/">VLD</a> 源码时，了解了一下 <a href="http://tut-framework.sourceforge.net/">TUT</a>。</p>
 
 <p>TUT（Template Unit Tests）是一个纯 C++ 单元测试框架。</p>
 
@@ -1310,152 +1110,7 @@
 
 
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  <div class="pagination">
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
-<aside class="sidebar">
-  
-    <section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/blog/2012/12/24/fog/">视野</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/11/08/value/">Values & Object</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/11/08/db/">数据库模块</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/10/29/metro-development/">Win8 应用程序开发</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/10/25/tut/">TUT 初探</a>
-      </li>
-    
-  </ul>
-</section>
-
-<section>
-  <h1>GitHub Repos</h1>
-  <ul id="gh_repos">
-    <li class="loading">Status updating&#8230;</li>
-  </ul>
-  
-  <a href="https://github.com/yulefox">@yulefox</a> on GitHub
-  
-  <script type="text/javascript">
-    $.domReady(function(){
-        if (!window.jXHR){
-            var jxhr = document.createElement('script');
-            jxhr.type = 'text/javascript';
-            jxhr.src = '/javascripts/libs/jXHR.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(jxhr, s);
-        }
-
-        github.showRepos({
-            user: 'yulefox',
-            count: 0,
-            skip_forks: true,
-            target: '#gh_repos'
-        });
-    });
-  </script>
-  <script src="/javascripts/github.js" type="text/javascript"> </script>
-</section>
-
-
-<section>
-  <h1>Latest Tweets</h1>
-  <ul id="tweets">
-    <li class="loading">Status updating&#8230;</li>
-  </ul>
-  <script type="text/javascript">
-    $.domReady(function(){
-      getTwitterFeed("yulefox", 4, false);
-    });
-  </script>
-  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
-  
-    <a href="http://twitter.com/yulefox" class="twitter-follow-button" data-show-count="false">Follow @yulefox</a>
-  
-</section>
-
-
-
-<section class="googleplus">
-  <h1>
-    <a href="https://plus.google.com/yulefox@gmail.com?rel=author">
-      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
-      Google+
-    </a>
-  </h1>
-</section>
-
-
-
-  
-</aside>
-
-    </div>
-  </div>
-  <footer role="contentinfo"><p>
-  Copyright &copy; 2012 - Yule Fox -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
-</p>
-
-</footer>
-  
-
-<script type="text/javascript">
-      var disqus_shortname = 'mindumper';
-      
-        
-        var disqus_script = 'count.js';
-      
-    (function () {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    }());
-</script>
-
-
-
-
-
-
-
-  <script type="text/javascript">
-    (function(){
-      var twitterWidgets = document.createElement('script');
-      twitterWidgets.type = 'text/javascript';
-      twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
-      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
-    })();
-  </script>
-
-
-
-
-
-</body>
-</html>
+</feed>

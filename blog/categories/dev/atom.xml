@@ -1,0 +1,607 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: dev | Fox's Blog]]></title>
+  <link href="http://mindumper.com/blog/categories/dev/atom.xml" rel="self"/>
+  <link href="http://mindumper.com/"/>
+  <updated>2012-12-24T11:19:36+08:00</updated>
+  <id>http://mindumper.com/</id>
+  <author>
+    <name><![CDATA[Yule Fox]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[视野]]></title>
+    <link href="http://mindumper.com/blog/2012/12/24/fog/"/>
+    <updated>2012-12-24T00:00:00+08:00</updated>
+    <id>http://mindumper.com/blog/2012/12/24/fog</id>
+    <content type="html"><![CDATA[<h2>视野规则</h2>
+
+<ul>
+<li>最简单的视野实现是以对象坐标为圆心的一个圆形区域。为减轻服务器负载，服务器端视野的计算以格子为单位。</li>
+<li>视野外的对象不可见，同一阵营的对象共享视野（通常情况下互相可见），不同阵营的对象无法共享视野。</li>
+<li><p>视野可能因下面的遮挡、开启规则而改变</p>
+
+<p>  <div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'>  <span class="k">enum</span> <span class="n">FogMode</span> <span class="p">{</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>  <span class="n">FOG_MODE_NONE</span><span class="p">,</span>          <span class="c1">// no fog, it is visible for the whole map</span>
+</span><span class='line'>  <span class="n">FOG_MODE_BLACK</span><span class="p">,</span>         <span class="c1">// black fog, terrain invisible</span>
+</span><span class='line'>  <span class="n">FOG_MODE_WAR</span><span class="p">,</span>           <span class="c1">// war fog, terrain visible</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="p">};</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p></li>
+</ul>
+
+
+<h3>阵营</h3>
+
+<ul>
+<li>中立</li>
+<li>A</li>
+<li><p>B</p>
+
+<p>  <div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'>  <span class="k">enum</span> <span class="n">CampType</span> <span class="p">{</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>  <span class="n">CAMP_TYPE_N</span><span class="p">,</span> <span class="c1">// neutral camp </span>
+</span><span class='line'>  <span class="n">CAMP_TYPE_A</span><span class="p">,</span> <span class="c1">// camp A</span>
+</span><span class='line'>  <span class="n">CAMP_TYPE_B</span><span class="p">,</span> <span class="c1">// camp B</span>
+</span><span class='line'>  <span class="n">CAMP_TYPE_MAX</span><span class="p">,</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="p">};</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p></li>
+</ul>
+
+
+<h3>视野遮挡规则</h3>
+
+<ul>
+<li>具有一定高度的视野障碍物（墙体、山体、草丛等）对视线遮挡造成视野范围缩小</li>
+<li>具有掩蔽效果的掩蔽体（迷雾、草丛、特定潜行区域等）可令其中的目标对外界（一般仅针对敌对阵营）不可见</li>
+<li>处于潜行、隐身状态的特定对象对外界（一般仅针对敌对阵营）不可见</li>
+<li>迷雾、致盲等效果可令对象视野缩小或完全不可见</li>
+</ul>
+
+
+<p>视野的遮挡规则通过 <em>过滤器</em> 实现。</p>
+
+<h4>视野过滤</h4>
+
+<p>没有过滤器的情况下，一个对象的视野是被圆形区域包围的格子集合。</p>
+
+<p>每一种过滤器均会根据对应规则过滤掉部分格子。</p>
+
+<pre><code><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">enum</span> <span class="n">FilterMode</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">FILTER_MODE_NONE</span>             <span class="o">=</span> <span class="mh">0x00000000</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">FILTER_MODE_INVISIBLE_SHAPE</span>  <span class="o">=</span> <span class="mh">0x00000001</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">FILTER_MODE_VIEW_BLOCK</span>       <span class="o">=</span> <span class="mh">0x00000002</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">FILTER_MODE_GRASS</span>            <span class="o">=</span> <span class="mh">0x00000004</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">FILTER_MODE_ALL</span>              <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="c1">// Calculate the view field of the shape/camp.</span>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="n">view</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">last</span> <span class="o">!=</span> <span class="n">idx</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">UpdateView</span><span class="p">(</span><span class="n">view</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">FilterView</span><span class="p">(</span><span class="n">view</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">UpdateTile</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">view</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</code></pre>
+
+<h3>视野开启规则</h3>
+
+<p>为使视野具有连续性，避免造成闪烁，可考虑仅在客户端添加延迟移除视野显示的功能。</p>
+
+<p>视野的开启需要借助具体对象实现，为之添加视野范围（目前仅考虑支持圆形视野，矢量视野等特性因暂无需求可不予考虑）属性，可为其自身及所属阵营开启视野。</p>
+
+<ul>
+<li>角色、宠物、NPC 等具有视野的对象</li>
+<li>通过技能、道具等创建的具有视野的对象（静止、移动）</li>
+</ul>
+
+
+<h3>视野实现</h3>
+
+<pre><code><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">struct</span> <span class="n">view_t</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">tile</span><span class="p">;</span> <span class="c1">// the index of the tile</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">last</span><span class="p">;</span> <span class="c1">// the index of the last tile</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">size</span><span class="p">;</span> <span class="c1">// the size of the view</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">anti_stealth</span><span class="p">;</span> <span class="c1">// the property of anti-stealth</span>
+</span><span class='line'>    <span class="n">point_t</span> <span class="n">pos</span><span class="p">;</span> <span class="c1">// the position of the shape</span>
+</span><span class='line'>    <span class="n">CampType</span> <span class="n">camp</span><span class="p">;</span> <span class="c1">// the camp of the view</span>
+</span><span class='line'>    <span class="n">object_view_t</span> <span class="n">field</span><span class="p">;</span> <span class="c1">// the cells of the view field</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</code></pre>
+
+<h4>反潜行视野</h4>
+
+<p>由于共享视野可能造成视野叠加，为正确实现视野变化，目前设计为视野添加了引用计数。</p>
+
+<p>由于潜行、隐身等状态的存在，必然存在反潜行、隐身等具有真视效果的视野。目前考虑的实现方案是为视野添加反潜行属性。</p>
+
+<p>为了区分普通视野及真视视野，为真视视野对应格子的引用计数叠加一个极大值 <code>0x00010000</code>。</p>
+
+<pre><code><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">const</span> <span class="kt">int</span> <span class="n">Map</span><span class="o">::</span><span class="n">VIEW_REFERENCE</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mh">0x00010000</span><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</code></pre>
+
+<h3>实现注意事项</h3>
+
+<ul>
+<li>需要明确视野不可见、目标不可见在实现方式上的区别
+
+<ul>
+<li>视野：场景</li>
+<li>隐身：对象</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>场景</h2>
+
+<h3>场景初始化及释放</h3>
+
+<p>基于场景模版（场景网格数据）创建场景对象。</p>
+
+<pre><code><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">Map</span><span class="o">::</span><span class="n">Init</span><span class="p">();</span>
+</span><span class='line'><span class="n">Map</span> <span class="o">*</span><span class="n">map</span> <span class="o">=</span> <span class="n">Map</span><span class="o">::</span><span class="n">Create</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+</span><span class='line'><span class="n">Map</span><span class="o">::</span><span class="n">Fini</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</code></pre>
+
+<h3>添加对象</h3>
+
+<p>在场景初始化之后，即可往场景上添加可见的物体对象（<code>Shape</code>），以玩家对象为例：</p>
+
+<ul>
+<li>创建对象；</li>
+<li>设置阵营；</li>
+<li><p>设置坐标/加入场景。</p>
+
+<p>  <div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'>  <span class="n">Player</span> <span class="o">*</span><span class="n">player</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">Player</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">GetObjectManager</span><span class="p">().</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>      <span class="n">Create</span><span class="p">(</span><span class="n">OBJECT_TYPE_PLAYER</span><span class="p">));</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="n">player</span><span class="o">-&gt;</span><span class="n">Set</span><span class="p">(</span><span class="s">&quot;camp&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">Map</span><span class="o">::</span><span class="n">CampType</span><span class="p">)</span><span class="n">camp</span><span class="p">);</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="n">map</span><span class="o">-&gt;</span><span class="n">SetPosition</span><span class="p">(</span><span class="n">player</span><span class="p">,</span> <span class="p">(</span><span class="k">const</span> <span class="n">point_t</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;)</span><span class="n">pos</span><span class="p">);</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>  <div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'>  <span class="c1">// 1. The shape is a new one. Add it to the current map.</span>
+</span><span class='line'>  <span class="c1">// 2. The shape is on another map. Remove it from the last map and add it</span>
+</span><span class='line'>  <span class="c1">//    to the current.</span>
+</span><span class='line'>  <span class="c1">// 3. The shape is on the current map already. Remove the last flags.&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="c1">// Calculate the view field of the shape/camp.</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="n">view</span><span class="o">-&gt;</span><span class="n">last</span> <span class="o">!=</span> <span class="n">idx</span><span class="p">)</span> <span class="p">{</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>  <span class="n">UpdateView</span><span class="p">(</span><span class="n">view</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">FilterView</span><span class="p">(</span><span class="n">view</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">UpdateTile</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">view</span><span class="p">);</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="p">}</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p></li>
+</ul>
+
+
+<h3>场景对象管理</h3>
+
+<pre><code><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">ELF_INL</span> <span class="k">const</span> <span class="n">shape_map</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">GetShapes</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_shapes</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="kt">void</span> <span class="n">GetShapes</span><span class="p">(</span><span class="n">Map</span><span class="o">::</span><span class="n">CampType</span> <span class="n">camp</span><span class="p">,</span> <span class="n">object_list</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">shapes</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+</span><span class='line'><span class="kt">bool</span> <span class="n">Has</span><span class="p">(</span><span class="k">const</span> <span class="n">Shape</span> <span class="o">*</span><span class="n">shape</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="n">RemoveShape</span><span class="p">(</span><span class="n">Shape</span> <span class="o">*</span><span class="n">shape</span><span class="p">);</span>
+</span><span class='line'><span class="kt">void</span> <span class="n">SetPosition</span><span class="p">(</span><span class="n">Shape</span> <span class="o">*</span><span class="n">shape</span><span class="p">,</span> <span class="k">const</span> <span class="n">point_t</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">pos</span><span class="p">);</span>
+</span><span class='line'><span class="k">const</span> <span class="n">object_view_t</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">GetObjectView</span><span class="p">(</span><span class="k">const</span> <span class="n">Shape</span> <span class="o">*</span><span class="n">shape</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+</span><span class='line'><span class="k">const</span> <span class="n">camp_view_t</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">GetCampView</span><span class="p">(</span><span class="n">Map</span><span class="o">::</span><span class="n">CampType</span> <span class="n">camp</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">shape_map</span> <span class="n">_shapes</span><span class="p">;</span> <span class="c1">// all shapes on the map</span>
+</span><span class='line'><span class="n">tile_shape_map</span> <span class="n">_tile_shapes</span><span class="p">;</span> <span class="c1">// all shapes on the tiles</span>
+</span><span class='line'><span class="n">camp_view_t</span> <span class="n">_camp_vews</span><span class="p">[</span><span class="n">CAMP_TYPE_MAX</span><span class="p">];</span> <span class="c1">// views of the camps</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</code></pre>
+
+<h2>网络通信实现</h2>
+
+<p>视野变化仅影响客户端显示及玩家游戏感受，对于服务器逻辑没有影响。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[TUT 初探]]></title>
+    <link href="http://mindumper.com/blog/2012/10/25/tut/"/>
+    <updated>2012-10-25T00:00:00+08:00</updated>
+    <id>http://mindumper.com/blog/2012/10/25/tut</id>
+    <content type="html"><![CDATA[<p>之前写代码时，都是根据自己需要编写一个简易的单元测试框架。最近在读 <a href="http://vld.codeplex.com/">VLD</a> 源码时，了解了一下 <a href="http://tut-framework.sourceforge.net/">TUT</a>。</p>
+
+<p>TUT（Template Unit Tests）是一个纯 C++ 单元测试框架。</p>
+
+<ul>
+<li><p>可移植性好，对编译器和操作系统几乎没有任何依赖。</p></li>
+<li><p>完全使用 C++ 模板实现，故仅需包含头文件，不依赖特定库，部署简单。</p></li>
+<li><p>自定义报告接口，方便集成到任意 IDE 或工具。</p></li>
+<li><p>支持多进程测试。</p></li>
+<li><p>在类 BSD 许可协议下可自由发布。</p></li>
+<li><p>测试用例以具名测试组（named test groups）的方式进行组织。</p></li>
+<li><p>支持回归测试（测试所有用例），或以测试组或单个测试用例为单位。</p></li>
+<li><p>纯 C++ 实现，不使用宏。</p></li>
+<li><p>可读性好，易维护。</p></li>
+</ul>
+
+
+<h2>特性</h2>
+
+<ul>
+<li><p>根据测试用例的相关性分组，每个测试组有自己的名称，属于自己的编译单元。一个测试组中的测试用例数量近乎无限（取决于编译器模板最大递归深度）。</p></li>
+<li><p>用户可一次运行所有测试用例（回归测试），单个测试组或部分测试用例。</p></li>
+<li><p>支持自定义回调接口进行格式输出，实现对测试过程及结果的跟踪。</p></li>
+<li><p>作为模板库，无需编译，包含头文件 <code>&lt;tut/tut.hpp&gt;</code> 即可。</p></li>
+</ul>
+
+
+<h2>测试用例组织结构</h2>
+
+<p>一个单元测试项目由测试程序、测试用例、测试组组成。测试程序包含了所有测试用例，这些测试用例根据相关性组织成测试组。</p>
+
+<h3>测试程序（Test Application）</h3>
+
+<p>基于 TUT 的应用程序，用于进行自动/手动测试。</p>
+
+<h2>测试用例（Tests）</h2>
+
+<p>单个测试一般仅测试单个的特定功能，如，针对一个容器，一个测试用例用以测试在执行 <code>clear()</code> 后，调用 <code>size()</code> 返回值是否为 <code>0</code>。</p>
+
+<h3>测试组（Test Groups）</h3>
+
+<p>根据功能将所有测试用例划分为若干测试组，TUT 可直接调用具有唯一名称的测试组。通常，每个测试组对应一个 C++ 源文件。</p>
+
+<h2>编写测试程序</h2>
+
+<ul>
+<li><p>测试什么？测试应覆盖所有正确及错误的应用环境。</p></li>
+<li><p>测试驱动的开发模式是一个不错的方案。</p></li>
+</ul>
+
+
+<p>测试组定义为一个结构体/类，包含测试所需的数据作为成员。测试用例继承自测试组，从而可直接访问测试组的数据成员。</p>
+
+<pre><code><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>++ </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">namespace</span> <span class="n">tut</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">struct</span> <span class="n">my_test</span> <span class="p">{</span> <span class="c1">// test group</span>
+</span><span class='line'>    <span class="c1">// methods and data</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">typedef</span> <span class="n">test_group</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">my_test</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">tg</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">typedef</span> <span class="n">tg</span><span class="o">::</span><span class="n">object</span> <span class="n">object</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">tg</span> <span class="n">my_group</span><span class="p">(</span><span class="s">&quot;my test&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">template</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">template</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="n">object</span><span class="o">::</span><span class="n">test</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="mi">1</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;()</span> <span class="p">{</span> <span class="c1">// test</span>
+</span><span class='line'>        <span class="c1">// do something here</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">using</span> <span class="n">namespace</span> <span class="n">tut</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">namespace</span> <span class="n">tut</span> <span class="p">{</span>
+</span><span class='line'><span class="n">test_runner_singleton</span> <span class="n">runner</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">()</span> <span class="c1">// entrance of the test application</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="c1">// run all tests in all groups</span>
+</span><span class='line'>    <span class="n">runner</span><span class="p">.</span><span class="n">get</span><span class="p">().</span><span class="n">run_tests</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// run all tests in group &quot;my test&quot;</span>
+</span><span class='line'>    <span class="n">runner</span><span class="p">.</span><span class="n">get</span><span class="p">().</span><span class="n">run_tests</span><span class="p">(</span><span class="s">&quot;my test&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// run test number 1 in group &quot;my test&quot;</span>
+</span><span class='line'>    <span class="n">runner</span><span class="p">.</span><span class="n">get</span><span class="p">().</span><span class="n">run_test</span><span class="p">(</span><span class="s">&quot;my test&quot;</span><span class="err">，</span><span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</code></pre>
+
+<p>运行测试时，每个测试对象都通过测试组的默认构造函数重新创建，因此，所有前置工作都被放在默认构造函数中完成。测试完成后，无论测试是否通过，测试对象均被析构，因此，清理工作也需要被放在析构函数中完成。</p>
+
+<pre><code><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>++ </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="c1">// test_player.cpp</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#include &amp;lt;tut/tut.hpp&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">using</span> <span class="n">namespace</span> <span class="n">Elf</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">namespace</span> <span class="n">tut</span> <span class="p">{</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">player</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">player</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">~</span><span class="n">player</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">typedef</span> <span class="n">test_group</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">player</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">factory</span><span class="p">;</span>
+</span><span class='line'><span class="k">typedef</span> <span class="n">factory</span><span class="o">::</span><span class="n">object</span> <span class="n">object</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">tut</span><span class="o">::</span><span class="n">factory</span> <span class="n">tf</span><span class="p">(</span><span class="s">&quot;player&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">template</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span>
+</span><span class='line'><span class="n">template</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span>
+</span><span class='line'><span class="kt">void</span> <span class="n">object</span><span class="o">::</span><span class="n">test</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="mi">1</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">set_test_name</span><span class="p">(</span><span class="s">&quot;Load Player&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">ensure</span><span class="p">(</span><span class="n">GetObjectManager</span><span class="p">().</span><span class="n">InitDB</span><span class="p">()</span> <span class="o">==</span> <span class="n">ELF_DB_RC_OK</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">Account</span> <span class="o">*</span><span class="n">acc1</span> <span class="o">=</span> <span class="n">GetObjectManager</span><span class="p">().</span><span class="n">LoadAccount</span><span class="p">(</span><span class="s">&quot;p0001&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">Account</span> <span class="o">*</span><span class="n">acc2</span> <span class="o">=</span> <span class="n">GetObjectManager</span><span class="p">().</span><span class="n">LoadAccount</span><span class="p">(</span><span class="s">&quot;p0001&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">Account</span> <span class="o">*</span><span class="n">acc3</span> <span class="o">=</span> <span class="n">GetObjectManager</span><span class="p">().</span><span class="n">LoadAccount</span><span class="p">(</span><span class="s">&quot;p10010&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">ensure</span><span class="p">(</span><span class="n">acc1</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">ensure</span><span class="p">(</span><span class="n">acc2</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">ensure</span><span class="p">(</span><span class="n">acc3</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">ensure</span><span class="p">(</span><span class="n">acc1</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">PlayerCount</span><span class="p">()</span> <span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">ensure</span><span class="p">(</span><span class="n">GetObjectManager</span><span class="p">().</span><span class="n">SavePlayers</span><span class="p">(</span><span class="n">acc1</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">GetID</span><span class="p">()));</span>
+</span><span class='line'>    <span class="n">ensure</span><span class="p">(</span><span class="n">GetObjectManager</span><span class="p">().</span><span class="n">SavePlayers</span><span class="p">(</span><span class="n">acc1</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">GetID</span><span class="p">()));</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// main.cpp</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">using</span> <span class="n">namespace</span> <span class="n">tut</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">namespace</span> <span class="n">tut</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">test_runner_singleton</span> <span class="n">runner</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="n">run</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">console_reporter</span> <span class="n">cb</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">runner</span><span class="p">.</span><span class="n">get</span><span class="p">().</span><span class="n">set_callback</span><span class="p">(</span><span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">cb</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">try</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">strcmp</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s">&quot;all&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">runner</span><span class="p">.</span><span class="n">get</span><span class="p">().</span><span class="n">run_tests</span><span class="p">();</span>
+</span><span class='line'>        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">runner</span><span class="p">.</span><span class="n">get</span><span class="p">().</span><span class="n">run_tests</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span> <span class="n">catch</span><span class="p">(</span><span class="k">const</span> <span class="n">tut</span><span class="o">::</span><span class="n">no_such_group</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">ex</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="s">&quot;No such group: &quot;</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">ex</span><span class="p">.</span><span class="n">what</span><span class="p">()</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span> <span class="n">catch</span><span class="p">(</span><span class="k">const</span> <span class="n">tut</span><span class="o">::</span><span class="n">tut_error</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">ex</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="s">&quot;General error: &quot;</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">ex</span><span class="p">.</span><span class="n">what</span><span class="p">()</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">BEGIN_CRASH_DUMP</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">elf_init</span><span class="p">();</span>
+</span><span class='line'>        <span class="n">db_init</span><span class="p">();</span>
+</span><span class='line'>        <span class="n">run</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">db_fini</span><span class="p">();</span>
+</span><span class='line'>        <span class="n">elf_fini</span><span class="p">();</span>
+</span><span class='line'>        <span class="n">exit</span><span class="p">(</span><span class="n">EXIT_SUCCESS</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span> <span class="n">CATCH_CRASH_DUMP</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">exit</span><span class="p">(</span><span class="n">EXIT_FAILURE</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+]]></content>
+  </entry>
+  
+</feed>

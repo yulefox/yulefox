@@ -1,0 +1,573 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>视野 - Fox's Blog</title>
+  <meta name="author" content="Yule Fox">
+
+  
+  <meta name="description" content="视野规则 最简单的视野实现是以对象坐标为圆心的一个圆形区域。为减轻服务器负载，服务器端视野的计算以格子为单位。
+视野外的对象不可见，同一阵营的对象共享视野（通常情况下互相可见），不同阵营的对象无法共享视野。
+视野可能因下面的遮挡、开启规则而改变 1
+2
+3
+4
+5
+6 enum FogMode &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://mindumper.com/blog/2012/12/24/fog/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Fox's Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Fox's Blog</a></h1>
+  
+    <h2>A Repository of Documents.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:mindumper.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">视野</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-24T00:00:00+08:00" pubdate data-updated="true">Dec 24<span>th</span>, 2012</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>视野规则</h2>
+
+<ul>
+<li>最简单的视野实现是以对象坐标为圆心的一个圆形区域。为减轻服务器负载，服务器端视野的计算以格子为单位。</li>
+<li>视野外的对象不可见，同一阵营的对象共享视野（通常情况下互相可见），不同阵营的对象无法共享视野。</li>
+<li>视野可能因下面的遮挡、开启规则而改变</li>
+</ul>
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'>    <span class="k">enum</span> <span class="n">FogMode</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">FOG_MODE_NONE</span><span class="p">,</span>          <span class="c1">// no fog, it is visible for the whole map</span>
+</span><span class='line'>        <span class="n">FOG_MODE_BLACK</span><span class="p">,</span>         <span class="c1">// black fog, terrain invisible</span>
+</span><span class='line'>        <span class="n">FOG_MODE_WAR</span><span class="p">,</span>           <span class="c1">// war fog, terrain visible</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>阵营</h3>
+
+<ul>
+<li>中立</li>
+<li>A</li>
+<li>B</li>
+</ul>
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'>    <span class="k">enum</span> <span class="n">CampType</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">CAMP_TYPE_N</span><span class="p">,</span> <span class="c1">// neutral camp </span>
+</span><span class='line'>        <span class="n">CAMP_TYPE_A</span><span class="p">,</span> <span class="c1">// camp A</span>
+</span><span class='line'>        <span class="n">CAMP_TYPE_B</span><span class="p">,</span> <span class="c1">// camp B</span>
+</span><span class='line'>        <span class="n">CAMP_TYPE_MAX</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>视野遮挡规则</h3>
+
+<ul>
+<li>具有一定高度的视野障碍物（墙体、山体、草丛等）对视线遮挡造成视野范围缩小</li>
+<li>具有掩蔽效果的掩蔽体（迷雾、草丛、特定潜行区域等）可令其中的目标对外界（一般仅针对敌对阵营）不可见</li>
+<li>处于潜行、隐身状态的特定对象对外界（一般仅针对敌对阵营）不可见</li>
+<li>迷雾、致盲等效果可令对象视野缩小或完全不可见</li>
+</ul>
+
+
+<p>视野的遮挡规则通过 <em>过滤器</em> 实现。</p>
+
+<h4>视野过滤</h4>
+
+<p>没有过滤器的情况下，一个对象的视野是被圆形区域包围的格子集合。</p>
+
+<p>每一种过滤器均会根据对应规则过滤掉部分格子。</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'>    <span class="k">enum</span> <span class="n">FilterMode</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">FILTER_MODE_NONE</span>             <span class="o">=</span> <span class="mh">0x00000000</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">FILTER_MODE_INVISIBLE_SHAPE</span>  <span class="o">=</span> <span class="mh">0x00000001</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">FILTER_MODE_VIEW_BLOCK</span>       <span class="o">=</span> <span class="mh">0x00000002</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">FILTER_MODE_GRASS</span>            <span class="o">=</span> <span class="mh">0x00000004</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">FILTER_MODE_ALL</span>              <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'>    <span class="c1">// Calculate the view field of the shape/camp.</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">view</span><span class="o">-&gt;</span><span class="n">last</span> <span class="o">!=</span> <span class="n">idx</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">UpdateView</span><span class="p">(</span><span class="n">view</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">FilterView</span><span class="p">(</span><span class="n">view</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">UpdateTile</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">view</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>视野开启规则</h3>
+
+<p>为使视野具有连续性，避免造成闪烁，可考虑仅在客户端添加延迟移除视野显示的功能。</p>
+
+<p>视野的开启需要借助具体对象实现，为之添加视野范围（目前仅考虑支持圆形视野，矢量视野等特性因暂无需求可不予考虑）属性，可为其自身及所属阵营开启视野。</p>
+
+<ul>
+<li>角色、宠物、NPC 等具有视野的对象</li>
+<li>通过技能、道具等创建的具有视野的对象（静止、移动）</li>
+</ul>
+
+
+<h3>视野实现</h3>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'>    <span class="k">struct</span> <span class="n">view_t</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">tile</span><span class="p">;</span> <span class="c1">// the index of the tile</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">last</span><span class="p">;</span> <span class="c1">// the index of the last tile</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">size</span><span class="p">;</span> <span class="c1">// the size of the view</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">anti_stealth</span><span class="p">;</span> <span class="c1">// the property of anti-stealth</span>
+</span><span class='line'>        <span class="n">point_t</span> <span class="n">pos</span><span class="p">;</span> <span class="c1">// the position of the shape</span>
+</span><span class='line'>        <span class="n">CampType</span> <span class="n">camp</span><span class="p">;</span> <span class="c1">// the camp of the view</span>
+</span><span class='line'>        <span class="n">object_view_t</span> <span class="n">field</span><span class="p">;</span> <span class="c1">// the cells of the view field</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>反潜行视野</h4>
+
+<p>由于共享视野可能造成视野叠加，为正确实现视野变化，目前设计为视野添加了引用计数。</p>
+
+<p>由于潜行、隐身等状态的存在，必然存在反潜行、隐身等具有真视效果的视野。目前考虑的实现方案是为视野添加反潜行属性。</p>
+
+<p>为了区分普通视野及真视视野，为真视视野对应格子的引用计数叠加一个极大值 <code>0x00010000</code>。</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'>    <span class="k">const</span> <span class="kt">int</span> <span class="n">Map</span><span class="o">::</span><span class="n">VIEW_REFERENCE</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mh">0x00010000</span><span class="p">};</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>实现注意事项</h3>
+
+<ul>
+<li>需要明确视野不可见、目标不可见在实现方式上的区别
+
+<ul>
+<li>视野：场景</li>
+<li>隐身：对象</li>
+</ul>
+</li>
+</ul>
+
+
+<h2>场景</h2>
+
+<h3>场景初始化及释放</h3>
+
+<p>基于场景模版（场景网格数据）创建场景对象。</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'>    <span class="n">Map</span><span class="o">::</span><span class="n">Init</span><span class="p">();</span>
+</span><span class='line'>    <span class="n">Map</span> <span class="o">*</span><span class="n">map</span> <span class="o">=</span> <span class="n">Map</span><span class="o">::</span><span class="n">Create</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">Map</span><span class="o">::</span><span class="n">Fini</span><span class="p">();</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>添加对象</h3>
+
+<p>在场景初始化之后，即可往场景上添加可见的物体对象（<code>Shape</code>），以玩家对象为例：</p>
+
+<ul>
+<li>创建对象；</li>
+<li>设置阵营；</li>
+<li>设置坐标/加入场景。</li>
+</ul>
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'>    <span class="n">Player</span> <span class="o">*</span><span class="n">player</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">Player</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">GetObjectManager</span><span class="p">().</span>
+</span><span class='line'>            <span class="n">Create</span><span class="p">(</span><span class="n">OBJECT_TYPE_PLAYER</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">player</span><span class="o">-&gt;</span><span class="n">Set</span><span class="p">(</span><span class="s">&quot;camp&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">Map</span><span class="o">::</span><span class="n">CampType</span><span class="p">)</span><span class="n">camp</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">map</span><span class="o">-&gt;</span><span class="n">SetPosition</span><span class="p">(</span><span class="n">player</span><span class="p">,</span> <span class="p">(</span><span class="k">const</span> <span class="n">point_t</span> <span class="o">&amp;</span><span class="p">)</span><span class="n">pos</span><span class="p">);</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'>    <span class="c1">// 1. The shape is a new one. Add it to the current map.</span>
+</span><span class='line'>    <span class="c1">// 2. The shape is on another map. Remove it from the last map and add it</span>
+</span><span class='line'>    <span class="c1">//    to the current.</span>
+</span><span class='line'>    <span class="c1">// 3. The shape is on the current map already. Remove the last flags.</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// Calculate the view field of the shape/camp.</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">view</span><span class="o">-&gt;</span><span class="n">last</span> <span class="o">!=</span> <span class="n">idx</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">UpdateView</span><span class="p">(</span><span class="n">view</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">FilterView</span><span class="p">(</span><span class="n">view</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">UpdateTile</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">view</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>场景对象管理</h3>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'>    <span class="n">ELF_INL</span> <span class="k">const</span> <span class="n">shape_map</span> <span class="o">&amp;</span><span class="n">GetShapes</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_shapes</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="n">GetShapes</span><span class="p">(</span><span class="n">Map</span><span class="o">::</span><span class="n">CampType</span> <span class="n">camp</span><span class="p">,</span> <span class="n">object_list</span> <span class="o">&amp;</span><span class="n">shapes</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">bool</span> <span class="n">Has</span><span class="p">(</span><span class="k">const</span> <span class="n">Shape</span> <span class="o">*</span><span class="n">shape</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kt">void</span> <span class="n">RemoveShape</span><span class="p">(</span><span class="n">Shape</span> <span class="o">*</span><span class="n">shape</span><span class="p">);</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="n">SetPosition</span><span class="p">(</span><span class="n">Shape</span> <span class="o">*</span><span class="n">shape</span><span class="p">,</span> <span class="k">const</span> <span class="n">point_t</span> <span class="o">&amp;</span><span class="n">pos</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">const</span> <span class="n">object_view_t</span> <span class="o">&amp;</span><span class="n">GetObjectView</span><span class="p">(</span><span class="k">const</span> <span class="n">Shape</span> <span class="o">*</span><span class="n">shape</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">const</span> <span class="n">camp_view_t</span> <span class="o">&amp;</span><span class="n">GetCampView</span><span class="p">(</span><span class="n">Map</span><span class="o">::</span><span class="n">CampType</span> <span class="n">camp</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">shape_map</span> <span class="n">_shapes</span><span class="p">;</span> <span class="c1">// all shapes on the map</span>
+</span><span class='line'>    <span class="n">tile_shape_map</span> <span class="n">_tile_shapes</span><span class="p">;</span> <span class="c1">// all shapes on the tiles</span>
+</span><span class='line'>    <span class="n">camp_view_t</span> <span class="n">_camp_vews</span><span class="p">[</span><span class="n">CAMP_TYPE_MAX</span><span class="p">];</span> <span class="c1">// views of the camps</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>网络通信实现</h2>
+
+<p>视野变化仅影响客户端显示及玩家游戏感受，对于服务器逻辑没有影响。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Yule Fox</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-24T00:00:00+08:00" pubdate data-updated="true">Dec 24<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/dev/'>dev</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://mindumper.com/blog/2012/12/24/fog/" data-via="yulefox" data-counturl="http://mindumper.com/blog/2012/12/24/fog/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/11/08/value/" title="Previous Post: Values & Object">&laquo; Values & Object</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/12/24/fog/">视野</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/11/08/value/">Values & Object</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/11/08/db/">数据库模块</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/10/29/metro-development/">Win8 应用程序开发</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/10/25/tut/">TUT 初探</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/yulefox">@yulefox</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'yulefox',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("yulefox", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/yulefox" class="twitter-follow-button" data-show-count="false">Follow @yulefox</a>
+  
+</section>
+
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/yulefox@gmail.com?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Yule Fox -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'mindumper';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

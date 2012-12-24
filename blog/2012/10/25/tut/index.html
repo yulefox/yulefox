@@ -1,0 +1,578 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>TUT 初探 - Fox's Blog</title>
+  <meta name="author" content="Yule Fox">
+
+  
+  <meta name="description" content="之前写代码时，都是根据自己需要编写一个简易的单元测试框架。最近在读 VLD 源码时，了解了一下 TUT。 TUT（Template Unit Tests）是一个纯 C++ 单元测试框架。 可移植性好，对编译器和操作系统几乎没有任何依赖。
+完全使用 C++ 模板实现，故仅需包含头文件，不依赖特定库， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://mindumper.com/blog/2012/10/25/tut/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Fox's Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Fox's Blog</a></h1>
+  
+    <h2>A Repository of Documents.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:mindumper.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">TUT 初探</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-25T00:00:00+08:00" pubdate data-updated="true">Oct 25<span>th</span>, 2012</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>之前写代码时，都是根据自己需要编写一个简易的单元测试框架。最近在读 <a href="http://vld.codeplex.com/">VLD</a> 源码时，了解了一下 <a href="http://tut-framework.sourceforge.net/">TUT</a>。</p>
+
+<p>TUT（Template Unit Tests）是一个纯 C++ 单元测试框架。</p>
+
+<ul>
+<li><p>可移植性好，对编译器和操作系统几乎没有任何依赖。</p></li>
+<li><p>完全使用 C++ 模板实现，故仅需包含头文件，不依赖特定库，部署简单。</p></li>
+<li><p>自定义报告接口，方便集成到任意 IDE 或工具。</p></li>
+<li><p>支持多进程测试。</p></li>
+<li><p>在类 BSD 许可协议下可自由发布。</p></li>
+<li><p>测试用例以具名测试组（named test groups）的方式进行组织。</p></li>
+<li><p>支持回归测试（测试所有用例），或以测试组或单个测试用例为单位。</p></li>
+<li><p>纯 C++ 实现，不使用宏。</p></li>
+<li><p>可读性好，易维护。</p></li>
+</ul>
+
+
+<h2>特性</h2>
+
+<ul>
+<li><p>根据测试用例的相关性分组，每个测试组有自己的名称，属于自己的编译单元。一个测试组中的测试用例数量近乎无限（取决于编译器模板最大递归深度）。</p></li>
+<li><p>用户可一次运行所有测试用例（回归测试），单个测试组或部分测试用例。</p></li>
+<li><p>支持自定义回调接口进行格式输出，实现对测试过程及结果的跟踪。</p></li>
+<li><p>作为模板库，无需编译，包含头文件 <code>&lt;tut/tut.hpp&gt;</code> 即可。</p></li>
+</ul>
+
+
+<h2>测试用例组织结构</h2>
+
+<p>一个单元测试项目由测试程序、测试用例、测试组组成。测试程序包含了所有测试用例，这些测试用例根据相关性组织成测试组。</p>
+
+<h3>测试程序（Test Application）</h3>
+
+<p>基于 TUT 的应用程序，用于进行自动/手动测试。</p>
+
+<h2>测试用例（Tests）</h2>
+
+<p>单个测试一般仅测试单个的特定功能，如，针对一个容器，一个测试用例用以测试在执行 <code>clear()</code> 后，调用 <code>size()</code> 返回值是否为 <code>0</code>。</p>
+
+<h3>测试组（Test Groups）</h3>
+
+<p>根据功能将所有测试用例划分为若干测试组，TUT 可直接调用具有唯一名称的测试组。通常，每个测试组对应一个 C++ 源文件。</p>
+
+<h2>编写测试程序</h2>
+
+<ul>
+<li><p>测试什么？测试应覆盖所有正确及错误的应用环境。</p></li>
+<li><p>测试驱动的开发模式是一个不错的方案。</p></li>
+</ul>
+
+
+<p>测试组定义为一个结构体/类，包含测试所需的数据作为成员。测试用例继承自测试组，从而可直接访问测试组的数据成员。</p>
+
+<figure class='code'><figcaption><span>++ </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'>    <span class="n">namespace</span> <span class="n">tut</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">struct</span> <span class="n">my_test</span> <span class="p">{</span> <span class="c1">// test group</span>
+</span><span class='line'>        <span class="c1">// methods and data</span>
+</span><span class='line'>        <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">typedef</span> <span class="n">test_group</span><span class="o">&lt;</span><span class="n">my_test</span><span class="o">&gt;</span> <span class="n">tg</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">typedef</span> <span class="n">tg</span><span class="o">::</span><span class="n">object</span> <span class="n">object</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">tg</span> <span class="n">my_group</span><span class="p">(</span><span class="s">&quot;my test&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">template</span><span class="o">&lt;&gt;</span>
+</span><span class='line'>        <span class="n">template</span><span class="o">&lt;&gt;</span>
+</span><span class='line'>        <span class="kt">void</span> <span class="n">object</span><span class="o">::</span><span class="n">test</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">()</span> <span class="p">{</span> <span class="c1">// test</span>
+</span><span class='line'>            <span class="c1">// do something here</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">using</span> <span class="n">namespace</span> <span class="n">tut</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">namespace</span> <span class="n">tut</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">test_runner_singleton</span> <span class="n">runner</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">main</span><span class="p">()</span> <span class="c1">// entrance of the test application</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// run all tests in all groups</span>
+</span><span class='line'>        <span class="n">runner</span><span class="p">.</span><span class="n">get</span><span class="p">().</span><span class="n">run_tests</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// run all tests in group &quot;my test&quot;</span>
+</span><span class='line'>        <span class="n">runner</span><span class="p">.</span><span class="n">get</span><span class="p">().</span><span class="n">run_tests</span><span class="p">(</span><span class="s">&quot;my test&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// run test number 1 in group &quot;my test&quot;</span>
+</span><span class='line'>        <span class="n">runner</span><span class="p">.</span><span class="n">get</span><span class="p">().</span><span class="n">run_test</span><span class="p">(</span><span class="s">&quot;my test&quot;</span><span class="err">，</span><span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>运行测试时，每个测试对象都通过测试组的默认构造函数重新创建，因此，所有前置工作都被放在默认构造函数中完成。测试完成后，无论测试是否通过，测试对象均被析构，因此，清理工作也需要被放在析构函数中完成。</p>
+
+<figure class='code'><figcaption><span>++ </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'>    <span class="c1">// test_player.cpp</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cp">#include &lt;tut/tut.hpp&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">using</span> <span class="n">namespace</span> <span class="n">Elf</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">namespace</span> <span class="n">tut</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">struct</span> <span class="n">player</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">player</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="o">~</span><span class="n">player</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">typedef</span> <span class="n">test_group</span><span class="o">&lt;</span><span class="n">player</span><span class="o">&gt;</span> <span class="n">factory</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">typedef</span> <span class="n">factory</span><span class="o">::</span><span class="n">object</span> <span class="n">object</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">tut</span><span class="o">::</span><span class="n">factory</span> <span class="n">tf</span><span class="p">(</span><span class="s">&quot;player&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">template</span><span class="o">&lt;&gt;</span>
+</span><span class='line'>    <span class="n">template</span><span class="o">&lt;&gt;</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="n">object</span><span class="o">::</span><span class="n">test</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">set_test_name</span><span class="p">(</span><span class="s">&quot;Load Player&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">ensure</span><span class="p">(</span><span class="n">GetObjectManager</span><span class="p">().</span><span class="n">InitDB</span><span class="p">()</span> <span class="o">==</span> <span class="n">ELF_DB_RC_OK</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">Account</span> <span class="o">*</span><span class="n">acc1</span> <span class="o">=</span> <span class="n">GetObjectManager</span><span class="p">().</span><span class="n">LoadAccount</span><span class="p">(</span><span class="s">&quot;p0001&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">Account</span> <span class="o">*</span><span class="n">acc2</span> <span class="o">=</span> <span class="n">GetObjectManager</span><span class="p">().</span><span class="n">LoadAccount</span><span class="p">(</span><span class="s">&quot;p0001&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">Account</span> <span class="o">*</span><span class="n">acc3</span> <span class="o">=</span> <span class="n">GetObjectManager</span><span class="p">().</span><span class="n">LoadAccount</span><span class="p">(</span><span class="s">&quot;p10010&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">ensure</span><span class="p">(</span><span class="n">acc1</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">ensure</span><span class="p">(</span><span class="n">acc2</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">ensure</span><span class="p">(</span><span class="n">acc3</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">ensure</span><span class="p">(</span><span class="n">acc1</span><span class="o">-&gt;</span><span class="n">PlayerCount</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">ensure</span><span class="p">(</span><span class="n">GetObjectManager</span><span class="p">().</span><span class="n">SavePlayers</span><span class="p">(</span><span class="n">acc1</span><span class="o">-&gt;</span><span class="n">GetID</span><span class="p">()));</span>
+</span><span class='line'>        <span class="n">ensure</span><span class="p">(</span><span class="n">GetObjectManager</span><span class="p">().</span><span class="n">SavePlayers</span><span class="p">(</span><span class="n">acc1</span><span class="o">-&gt;</span><span class="n">GetID</span><span class="p">()));</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// main.cpp</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">using</span> <span class="n">namespace</span> <span class="n">tut</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">namespace</span> <span class="n">tut</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">test_runner_singleton</span> <span class="n">runner</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kt">void</span> <span class="n">run</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">console_reporter</span> <span class="n">cb</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">runner</span><span class="p">.</span><span class="n">get</span><span class="p">().</span><span class="n">set_callback</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cb</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">try</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">strcmp</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s">&quot;all&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="n">runner</span><span class="p">.</span><span class="n">get</span><span class="p">().</span><span class="n">run_tests</span><span class="p">();</span>
+</span><span class='line'>            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>                <span class="n">runner</span><span class="p">.</span><span class="n">get</span><span class="p">().</span><span class="n">run_tests</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span> <span class="n">catch</span><span class="p">(</span><span class="k">const</span> <span class="n">tut</span><span class="o">::</span><span class="n">no_such_group</span> <span class="o">&amp;</span><span class="n">ex</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;No such group: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">ex</span><span class="p">.</span><span class="n">what</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span> <span class="n">catch</span><span class="p">(</span><span class="k">const</span> <span class="n">tut</span><span class="o">::</span><span class="n">tut_error</span> <span class="o">&amp;</span><span class="n">ex</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;General error: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">ex</span><span class="p">.</span><span class="n">what</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">BEGIN_CRASH_DUMP</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">elf_init</span><span class="p">();</span>
+</span><span class='line'>            <span class="n">db_init</span><span class="p">();</span>
+</span><span class='line'>            <span class="n">run</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
+</span><span class='line'>            <span class="n">db_fini</span><span class="p">();</span>
+</span><span class='line'>            <span class="n">elf_fini</span><span class="p">();</span>
+</span><span class='line'>            <span class="n">exit</span><span class="p">(</span><span class="n">EXIT_SUCCESS</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span> <span class="n">CATCH_CRASH_DUMP</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">exit</span><span class="p">(</span><span class="n">EXIT_FAILURE</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Yule Fox</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-25T00:00:00+08:00" pubdate data-updated="true">Oct 25<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/dev/'>dev</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://mindumper.com/blog/2012/10/25/tut/" data-via="yulefox" data-counturl="http://mindumper.com/blog/2012/10/25/tut/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/10/29/metro-development/" title="Next Post: Win8 应用程序开发">Win8 应用程序开发 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/12/24/fog/">视野</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/11/08/value/">Values & Object</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/11/08/db/">数据库模块</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/10/29/metro-development/">Win8 应用程序开发</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/10/25/tut/">TUT 初探</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/yulefox">@yulefox</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'yulefox',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("yulefox", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/yulefox" class="twitter-follow-button" data-show-count="false">Follow @yulefox</a>
+  
+</section>
+
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/yulefox@gmail.com?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Yule Fox -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'mindumper';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
