@@ -4,7 +4,7 @@
   <title><![CDATA[Category: dev | Fox's Blog]]></title>
   <link href="http://mindumper.com/blog/categories/dev/atom.xml" rel="self"/>
   <link href="http://mindumper.com/"/>
-  <updated>2012-12-24T12:17:21+08:00</updated>
+  <updated>2012-12-24T12:26:46+08:00</updated>
   <id>http://mindumper.com/</id>
   <author>
     <name><![CDATA[Yule Fox]]></name>
@@ -47,7 +47,7 @@
 </ul>
 
 
-<p><img src="/images/view_agents_fog.png" alt="Alt text" /></p>
+<p><img src="/images/view_agents_fog.png" alt="Enable/Disable View Fog" /></p>
 
 <h3>阵营</h3>
 
@@ -92,8 +92,6 @@
 
 <p>视野的遮挡规则通过 <em>过滤器</em> 实现。</p>
 
-<p><img src="images/view_block_rays.jpg" alt="Alt text" /></p>
-
 <h4>视野过滤</h4>
 
 <p>没有过滤器的情况下，一个对象的视野是被圆形区域包围的格子集合。</p>
@@ -132,6 +130,8 @@
 </span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 </code></pre>
+
+<p><img src="images/view_block_rays.jpg" alt="View Filter" /></p>
 
 <h3>视野开启规则</h3>
 
