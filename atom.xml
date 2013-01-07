@@ -4,7 +4,7 @@
   <title><![CDATA[Fox's Blog]]></title>
   <link href="http://mindumper.com/atom.xml" rel="self"/>
   <link href="http://mindumper.com/"/>
-  <updated>2013-01-07T17:40:00+08:00</updated>
+  <updated>2013-01-07T18:34:58+08:00</updated>
   <id>http://mindumper.com/</id>
   <author>
     <name><![CDATA[Yule Fox]]></name>
@@ -12,15 +12,6 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
-  
-  <entry>
-    <title type="html"><![CDATA[Liquid error: undefined method `gsub' for 2012:Fixnum]]></title>
-    <link href="http://mindumper.com/blog/2013/01/04/annals/"/>
-    <updated>2013-01-04T00:00:00+08:00</updated>
-    <id>http://mindumper.com/blog/2013/01/04/annals</id>
-    <content type="html"><![CDATA[<p>为了养房养车，工作也不能轻易换。</p>
-]]></content>
-  </entry>
   
   <entry>
     <title type="html"><![CDATA[视野]]></title>
