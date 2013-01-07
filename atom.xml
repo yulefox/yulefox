@@ -4,7 +4,7 @@
   <title><![CDATA[Fox's Blog]]></title>
   <link href="http://mindumper.com/atom.xml" rel="self"/>
   <link href="http://mindumper.com/"/>
-  <updated>2012-12-28T15:08:31+08:00</updated>
+  <updated>2013-01-07T17:40:00+08:00</updated>
   <id>http://mindumper.com/</id>
   <author>
     <name><![CDATA[Yule Fox]]></name>
@@ -12,6 +12,15 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Liquid error: undefined method `gsub' for 2012:Fixnum]]></title>
+    <link href="http://mindumper.com/blog/2013/01/04/annals/"/>
+    <updated>2013-01-04T00:00:00+08:00</updated>
+    <id>http://mindumper.com/blog/2013/01/04/annals</id>
+    <content type="html"><![CDATA[<p>为了养房养车，工作也不能轻易换。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[视野]]></title>
@@ -90,27 +99,6 @@
 
 <p>最初在考虑基于格子实现视野功能时，通过过滤器对视野中的格子依次过滤，最终格子上的对象即纳入视野中。</p>
 
-<p>在基于对象实现视野过滤的方案中，实现流程如下：</p>
-
-<ul>
-<li>检索对象视野中的其他对象到一个集合中。</li>
-<li>对非空对象集合应用过滤器组。</li>
-<li>刷新阵营视野对象集合。</li>
-<li><strong>刷新相关对象（对象视野中的其他对象）的视野</strong>。</li>
-<li>对比各阵营对象集合在视野改变前后的变化，完成消息分发。</li>
-</ul>
-
-
-<p><img src="http://mindumper.com/images/view_agents_around.png" alt="Shapes Around" /></p>
-
-<p><img src="http://mindumper.com/images/view_agents_around_connection.png" alt="Shapes Around With Connection" /></p>
-
-<p><img src="http://mindumper.com/images/view_agents_filtered.png" alt="Shapes Around Filtered By Blocks" /></p>
-
-<p><img src="http://mindumper.com/images/view_camps_no_fog.png" alt="Camp View Disable Flog" /></p>
-
-<p><img src="http://mindumper.com/images/view_camps_fog.png" alt="Camp View Enable Flog" /></p>
-
 <p>每一种过滤器均会根据对应规则过滤掉部分 <strong>对象</strong>。</p>
 
 <figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -155,10 +143,32 @@
 <span class='line-number'>17</span>
 <span class='line-number'>18</span>
 <span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'>    <span class="c1">// Calculate the view field of the shape/camp.</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'>    <span class="c1">// before: SetPosition()</span>
+</span><span class='line'>    <span class="c1">// Calculate the view field of the shape/camp.</span>
 </span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">view</span><span class="o">-&gt;</span><span class="n">last</span> <span class="o">!=</span> <span class="n">idx</span><span class="p">)</span> <span class="p">{</span>
 </span><span class='line'>        <span class="n">UpdateView</span><span class="p">(</span><span class="n">view</span><span class="p">);</span>
 </span><span class='line'>        <span class="n">UpdateCampView</span><span class="p">(</span><span class="n">view</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="c1">// now: Update()</span>
+</span><span class='line'>    <span class="c1">// update the view of the other shapes around</span>
+</span><span class='line'>    <span class="n">shape_map</span><span class="o">::</span><span class="n">iterator</span> <span class="n">itr</span> <span class="o">=</span>  <span class="n">_shapes</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span>
+</span><span class='line'>    <span class="n">view_t</span> <span class="o">*</span><span class="n">view</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">Shape</span> <span class="o">*</span><span class="n">shape</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(;</span> <span class="n">itr</span> <span class="o">!=</span> <span class="n">_shapes</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="o">++</span><span class="n">itr</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">view</span> <span class="o">=</span> <span class="n">itr</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">UpdateView</span><span class="p">(</span><span class="n">view</span><span class="p">);</span>
 </span><span class='line'>    <span class="p">}</span>
 </span><span class='line'>
 </span><span class='line'>    <span class="kt">void</span> <span class="n">Map</span><span class="o">::</span><span class="n">UpdateView</span><span class="p">(</span><span class="n">view_t</span> <span class="o">*</span><span class="n">view</span><span class="p">)</span>
@@ -170,8 +180,8 @@
 </span><span class='line'>
 </span><span class='line'>        <span class="n">GetShapesAround</span><span class="p">(</span><span class="n">view</span><span class="p">);</span>
 </span><span class='line'>        <span class="n">FilterView</span><span class="p">(</span><span class="n">view</span><span class="p">);</span>
-</span><span class='line'>
 </span><span class='line'>        <span class="n">diff</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> <span class="n">view</span><span class="o">-&gt;</span><span class="n">shapes</span><span class="p">,</span> <span class="n">view</span><span class="o">-&gt;</span><span class="n">shapes_add</span><span class="p">,</span> <span class="n">view</span><span class="o">-&gt;</span><span class="n">shapes_del</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">UpdateCampView</span><span class="p">(</span><span class="n">view</span><span class="p">);</span>
 </span><span class='line'>    <span class="p">}</span>
 </span><span class='line'>
 </span></code></pre></td></tr></table></div></figure>
@@ -299,7 +309,52 @@
 
 <p><strong>在基于对象的反潜行视野中，反潜行的功能简化为完全依赖过滤器实现</strong>。</p>
 
-<h3>实现注意事项</h3>
+<h3>实现</h3>
+
+<p><strong>结合网络消息分发机制的实现，需要对对象移动进行帧率控制，并按帧分发移动、视野消息</strong>。</p>
+
+<p>在基于对象实现视野过滤的方案中，实现流程如下：</p>
+
+<ul>
+<li>检索对象视野中的其他对象到一个集合中。</li>
+<li>对非空对象集合应用过滤器组。</li>
+<li>刷新阵营视野对象集合。</li>
+<li><strong>刷新相关对象（对象视野中的其他对象）的视野</strong>。</li>
+<li>对比各阵营对象集合在视野改变前后的变化，完成消息分发。</li>
+</ul>
+
+
+<h4>移动与视野控制</h4>
+
+<p><img src="http://mindumper.com/images/view_agents_around.png" alt="Shapes Around" /></p>
+
+<p><img src="http://mindumper.com/images/view_agents_around_connection.png" alt="Shapes Around With Connection" /></p>
+
+<p><img src="http://mindumper.com/images/view_agents_filtered.png" alt="Shapes Around Filtered By Blocks" /></p>
+
+<p><img src="http://mindumper.com/images/view_agents_all.png" alt="Camp View/Disable Flog" /></p>
+
+<p><img src="http://mindumper.com/images/view_agents_camp_a.png" alt="Camp View/Camp A" /></p>
+
+<p><img src="http://mindumper.com/images/view_agents_camp_b.png" alt="Camp View/Camp B" /></p>
+
+<p><img src="http://mindumper.com/images/view_agents_camp_n.png" alt="Camp View/Camp N" /></p>
+
+<h4>测试效果</h4>
+
+<p>帧率：10
+对象数量：100
+自动添加/删除对象：允许</p>
+
+<p>当对象数量在 100 以下时，效果还是可以接受的；超过 100 之后，有比较明显的卡顿现象。主要原因是过多的对象聚集在同一区域，加重了视野的计算量。</p>
+
+<p>帧率：10
+对象数量：150
+自动添加/删除对象：不允许</p>
+
+<p>当对象数量在 150 以下时，效果还是可以接受的；超过 180 之后，有比较明显的卡顿现象。此时，整个场景基本布满对象，视野计算量较大。</p>
+
+<h4>实现注意事项</h4>
 
 <ul>
 <li>需要明确视野不可见、目标不可见在实现方式上的区别
