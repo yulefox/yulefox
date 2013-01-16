@@ -4,7 +4,7 @@
   <title><![CDATA[Fox's Blog]]></title>
   <link href="http://mindumper.com/atom.xml" rel="self"/>
   <link href="http://mindumper.com/"/>
-  <updated>2013-01-16T14:01:03+08:00</updated>
+  <updated>2013-01-16T14:14:39+08:00</updated>
   <id>http://mindumper.com/</id>
   <author>
     <name><![CDATA[Yule Fox]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[2012 年度总结]]></title>
-    <link href="http://mindumper.com/blog/2013/01/04/annals/"/>
-    <updated>2013-01-04T00:00:00+08:00</updated>
-    <id>http://mindumper.com/blog/2013/01/04/annals</id>
+    <link href="http://mindumper.com/blog/2013/01/16/annals/"/>
+    <updated>2013-01-16T00:00:00+08:00</updated>
+    <id>http://mindumper.com/blog/2013/01/16/annals</id>
     <content type="html"><![CDATA[<p>回顾 2012 年，除了还在坚持写代码之外，其他能够回忆起来有意义的事情乏善可陈：文件夹里的文档一堆，不过都是见不得人的半成品，以至于只能靠 SVN 的 log 来回忆。</p>
 
 <p>2011 年 11 月到 2012 年 2 月，大部分时间花在网络库、其他公共库和登录服务器的重写上，有一定的自由按自己的意愿去开发，重写大大降低了模块间的耦合。</p>
