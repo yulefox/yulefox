@@ -9,7 +9,7 @@
   <meta name="author" content="Yule Fox">
 
   
-  <meta name="description" content="视野规则 最简单的视野实现是以对象坐标为圆心的一个圆形区域。最初考虑：为减轻服务器负载，服务器端视野的计算以格子为单位。在跟大家讨论之后，发现在对象移动时刷新视野的方案并不合理，更好的方案是在确认对象周围有其他对象时重新计算视野可见对象，这样可以减少周围没有其他对象（结合实际应用， &hellip;">
+  <meta name="description" content="回顾 2012 年，除了还在坚持写代码之外，其他能够回忆起来有意义的事情乏善可陈：文件夹里的文档一堆，不过都是见不得人的半成品，以至于只能靠 SVN 的 log 来回忆。 2011 年 11 月到 2012 年 2 月，大部分时间花在网络库、其他公共库和登录服务器的重写上， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +64,56 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/01/04/annals/">2012 年度总结</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-04T00:00:00+08:00" pubdate data-updated="true">Jan 4<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/01/04/annals/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>回顾 2012 年，除了还在坚持写代码之外，其他能够回忆起来有意义的事情乏善可陈：文件夹里的文档一堆，不过都是见不得人的半成品，以至于只能靠 SVN 的 log 来回忆。</p>
+
+<p>2011 年 11 月到 2012 年 2 月，大部分时间花在网络库、其他公共库和登录服务器的重写上，有一定的自由按自己的意愿去开发，重写大大降低了模块间的耦合。</p>
+
+<p>3 月到 7 月，改写内存库，间断优化了网络卡功能。</p>
+
+<p>8、9 月，梳理日志模块、宕机跟踪、内存监测等功能，对公共库相关模块进行整理，添加脚本、物品、技能、ELO 实现，并初步基于 <a href="http://code.google.com/p/recastnavigation/">RecastNavigation</a> 和搭建的脚本模块为公共库提供了 Demo 及测试功能。</p>
+
+<p>10 月底，带着对 Win8 的好感和期待，第一次为正版操作系统付费。之后，简单了解了 Win8 应用商店的开发流程之后，用 Cocos2d-X 完成（确切地说是抄袭）了一个入门游戏，在提交到商店之后 <a href="http://apps.microsoft.com/windows/zh-CN/app/pop-star/3bb76a99-3113-47ec-a140-558a5f87d3a9">PopStar</a>，也失去了继续深入下去的动力和兴趣。</p>
+
+<p>12 月，随着公共模块的逐步完善，DB、账号、场景及对象管理功能。</p>
+
+<p>1 月，在场景中实现对象的自由移动和战争迷雾功能。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1516,6 +1566,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/01/04/annals/">2012 年度总结</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/12/24/fog/">视野</a>
       </li>
     
@@ -1529,10 +1583,6 @@
     
       <li class="post">
         <a href="/blog/2012/10/29/metro-development/">Win8 应用程序开发</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/10/25/tut/">TUT 初探</a>
       </li>
     
   </ul>
