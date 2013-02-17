@@ -4,7 +4,7 @@
   <title><![CDATA[Category: dev | Fox's Blog]]></title>
   <link href="http://mindumper.com/blog/categories/dev/atom.xml" rel="self"/>
   <link href="http://mindumper.com/"/>
-  <updated>2013-01-16T17:32:24+08:00</updated>
+  <updated>2013-02-17T13:37:13+08:00</updated>
   <id>http://mindumper.com/</id>
   <author>
     <name><![CDATA[Yule Fox]]></name>
@@ -12,6 +12,250 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[A * 寻路]]></title>
+    <link href="http://mindumper.com/blog/2013/02/17/pathfinding/"/>
+    <updated>2013-02-17T00:00:00+08:00</updated>
+    <id>http://mindumper.com/blog/2013/02/17/pathfinding</id>
+    <content type="html"><![CDATA[<p>目前的场景格式没有使用导航网格，只是基于方格。采用 A* 寻路算法时，节点是多边形网格还是普通方格唯一的区别在于路径的估价。</p>
+
+<p>A* 算法可以看作是最好优先搜索（Best-First Search）的一种实现，采用启发式（Heuristic）搜索寻找给定结点到目标结点具有最低启发代价（Heuristic Cost）的路径。</p>
+
+<h3>术语（Terms）</h3>
+
+<ul>
+<li>总代价函数 <code>f(x)</code>：起点到终点的路径代价/估价，<code>f(x) = g(x) + h(x)</code>。</li>
+<li>路径代价函数 <code>g(x)</code>：起点到最佳节点 <code>x</code> 的路径代价，已经走过的路径的实际代价。</li>
+<li>启发估价函数 <code>h(x)</code>：从 <code>x</code> 到目标节点的距离估价，未走过的路径的启发估价，最佳节点到目标节点的直线距离可以作为可接受的启发估价，最简单，虽然未必准确。</li>
+<li>开放列表（open list）：待评价的节点集合。</li>
+<li>关闭列表（closed list）：评价过的节点集合。</li>
+</ul>
+
+
+<h3>实现（Descriptions）</h3>
+
+<ol>
+<li>将起点添加到开放列表，初始化起点的 <code>f/g/h</code> 值。</li>
+<li>如果开放列表为空，寻路失败，转 9。</li>
+<li>从开放列表中选取总代价 <code>f</code> 最小的节点作为最佳节点，并将最佳节点移入关闭列表。</li>
+<li>如果最佳节点即目标节点，寻路成功，转 7。</li>
+<li>获取最佳节点的可通过邻接节点，将不在开放列表中的邻接节点加入到开放列表。</li>
+<li>遍历邻接节点，计算并更新邻接节点的估价及总代价，转 2。</li>
+<li>根据节点继承关系计算路径及关键节点，确定路径点。</li>
+<li>优化路径点（去除不必要的路径点）。</li>
+<li><p>结束。</p>
+
+<p> <div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'> <span class="n">Path</span><span class="o">::</span><span class="n">Path</span><span class="p">(</span><span class="kt">int</span> <span class="n">idx</span><span class="p">,</span> <span class="k">const</span> <span class="n">point_t</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">start</span><span class="p">,</span> <span class="k">const</span> <span class="n">point_t</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">end</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="o">:</span> <span class="n">_start_point</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+</span><span class='line'> <span class="p">,</span> <span class="n">_end_point</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="n">_mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="o">::</span><span class="n">GetMesh</span><span class="p">(</span><span class="n">idx</span><span class="p">);</span>
+</span><span class='line'> <span class="n">ELF_ASSERT</span><span class="p">(</span><span class="n">_mesh</span><span class="p">);</span>
+</span><span class='line'> <span class="n">_start_node</span> <span class="o">=</span> <span class="n">_mesh</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">GetTile</span><span class="p">(</span><span class="n">start</span><span class="p">);</span>
+</span><span class='line'> <span class="n">_end_node</span> <span class="o">=</span> <span class="n">_mesh</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">GetTile</span><span class="p">(</span><span class="n">end</span><span class="p">);</span>
+</span><span class='line'> <span class="n">_g</span><span class="p">[</span><span class="n">_start_node</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span> <span class="c1">// cost from nodes along the best known path</span>
+</span><span class='line'> <span class="n">_f</span><span class="p">[</span><span class="n">_start_node</span><span class="p">]</span> <span class="o">=</span> <span class="n">_mesh</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">Distance</span><span class="p">(</span><span class="n">_start_node</span><span class="p">,</span> <span class="n">_end_node</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1">// the open list initially contains the start node</span>
+</span><span class='line'> <span class="n">_open</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">_start_node</span><span class="p">);</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="p">}</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="kt">bool</span> <span class="n">Path</span><span class="o">::</span><span class="n">FindPath</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span><span class='line'> <span class="p">{</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="n">path_rc</span> <span class="n">rc</span> <span class="o">=</span> <span class="n">PATH_RC_FINDING</span><span class="p">;</span>
+</span><span class='line'> <span class="kt">bool</span> <span class="n">res</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'> <span class="k">while</span> <span class="p">((</span><span class="n">rc</span> <span class="o">=</span> <span class="n">Step</span><span class="p">())</span> <span class="o">==</span> <span class="n">PATH_RC_FINDING</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// empty loop</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'> <span class="k">if</span> <span class="p">(</span><span class="n">rc</span> <span class="o">==</span> <span class="n">PATH_RC_FOUND</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>     <span class="n">ReconstructPath</span><span class="p">(</span><span class="n">_end_node</span><span class="p">);</span>
+</span><span class='line'>     <span class="n">CalculatePathPoints</span><span class="p">();</span>
+</span><span class='line'>     <span class="n">OptimizePathPoints</span><span class="p">();</span>
+</span><span class='line'>     <span class="n">res</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'> <span class="k">return</span> <span class="n">res</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="p">}</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="n">Path</span><span class="o">::</span><span class="n">path_rc</span> <span class="n">Path</span><span class="o">::</span><span class="n">Step</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span><span class='line'> <span class="p">{</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span> <span class="k">if</span> <span class="p">(</span><span class="n">_open</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span> <span class="k">return</span> <span class="n">PATH_RC_FAILED</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'> <span class="n">CalculateCurrent</span><span class="p">();</span>
+</span><span class='line'> <span class="n">_selected</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">_cur_node</span><span class="p">);</span>
+</span><span class='line'> <span class="k">if</span> <span class="p">(</span><span class="n">_cur_node</span> <span class="o">==</span> <span class="n">_end_node</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>     <span class="k">return</span> <span class="n">PATH_RC_FOUND</span><span class="p">;</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'> <span class="n">CalculateNeighbors</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'> <span class="n">Mesh</span><span class="o">::</span><span class="n">tile_list</span><span class="o">::</span><span class="n">const_iterator</span> <span class="n">itr</span> <span class="o">=</span> <span class="n">_neighbors</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1">// move the current node from the open list to the closed set</span>
+</span><span class='line'> <span class="n">_open</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">_cur_node</span><span class="p">);</span>
+</span><span class='line'> <span class="n">_closed</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">_cur_node</span><span class="p">);</span>
+</span><span class='line'> <span class="k">for</span> <span class="p">(;</span> <span class="n">itr</span> <span class="o">!=</span> <span class="n">_neighbors</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="o">++</span><span class="n">itr</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>     <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="o">*</span><span class="n">itr</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>     <span class="k">if</span> <span class="p">(</span><span class="n">InClosedList</span><span class="p">(</span><span class="n">n</span><span class="p">))</span> <span class="k">continue</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>     <span class="c1">// tentative g score</span>
+</span><span class='line'>     <span class="kt">float</span> <span class="n">tg</span> <span class="o">=</span> <span class="n">_g</span><span class="p">[</span><span class="n">_cur_node</span><span class="p">]</span> <span class="o">+</span> <span class="n">_mesh</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">Distance</span><span class="p">(</span><span class="n">_cur_node</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
+</span><span class='line'>     <span class="kt">bool</span> <span class="n">in</span> <span class="o">=</span> <span class="n">InOpenList</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>     <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">in</span> <span class="o">||</span> <span class="n">tg</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">_g</span><span class="p">[</span><span class="n">n</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>         <span class="n">_came_from</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">_cur_node</span><span class="p">;</span>
+</span><span class='line'>         <span class="n">_g</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">tg</span><span class="p">;</span>
+</span><span class='line'>         <span class="n">_f</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">_g</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">+</span> <span class="n">_mesh</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">Distance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">_end_node</span><span class="p">);</span>
+</span><span class='line'>         <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">in</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>             <span class="n">_open</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
+</span><span class='line'>         <span class="p">}</span>
+</span><span class='line'>     <span class="p">}</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'> <span class="k">return</span> <span class="n">PATH_RC_FINDING</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="p">}</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p></li>
+</ol>
+
+
+<h3>RecastNavigation 的 A* 实现</h3>
+
+<p><a href="http://code.google.com/p/recastnavigation/">RecastNavigation</a> （下文简称 Recast）基于导航网格，如前文所述，A* 算法与节点形状无关，区别在于路径估价。</p>
+
+<p>Recast 的代价函数综合了路径点的距离与所在节点的代价（节点的地形、地貌，沼泽、草地、沙漠、公路），距离估价函数略小于两点直线距离（乘了一个因子 0.999f）。</p>
+
+<h3>带动态阻挡的寻路算法</h3>
+
+<ul>
+<li>根据动态阻挡情况，定期调整静态阻挡（将暂时被堵死的路段上的节点修改为静态阻挡，以影响寻路结果）。</li>
+<li>使用 A* 寻路，确定路径点：<code>path_points</code>。</li>
+<li>路径上没有动态阻挡，按路径点 <code>path_points</code> 移动，移除经过的路径点（<code>path_points</code>）。</li>
+<li>路径上有动态阻挡，寻找合适的转向角，确认中间节点。</li>
+<li>移动到中间节点。</li>
+<li>重新优化路径点。</li>
+</ul>
+
+
+<p>带动态阻挡的寻路实现是比较复杂的。难点在于：</p>
+
+<ul>
+<li>当前路径上有动态阻挡时，如何计算合适的转向角及新的关键节点。</li>
+<li>偏离起初的路径之后，如何尽快恢复到正轨上。</li>
+<li>结合移动对象自身体积（半径）计算通过性和路径。</li>
+</ul>
+
+
+<h3>TODO</h3>
+
+<ul>
+<li>优化最佳节点的选取，减少遍历，可使用一次冒泡（Bubble Up）。</li>
+<li>优化寻路失败情况下的效率，简单粗暴的方法是设定路径长度/开放列表节点数阈值。</li>
+</ul>
+
+
+<h3>References</h3>
+
+<ul>
+<li><a href="http://en.wikipedia.org/wiki/A*_search_algorithm">A* search algorithm</a></li>
+<li><a href="http://www.policyalmanac.org/games/aStarTutorial.htm">A* Pathfinding for Beginners</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[视野]]></title>
@@ -497,140 +741,19 @@
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[TUT 初探]]></title>
-    <link href="http://mindumper.com/blog/2012/10/25/tut/"/>
-    <updated>2012-10-25T00:00:00+08:00</updated>
-    <id>http://mindumper.com/blog/2012/10/25/tut</id>
-    <content type="html"><![CDATA[<p>之前写代码时，都是根据自己需要编写一个简易的单元测试框架。最近在读 <a href="http://vld.codeplex.com/">VLD</a> 源码时，了解了一下 <a href="http://tut-framework.sourceforge.net/">TUT</a>。</p>
+    <title type="html"><![CDATA[Values & Object]]></title>
+    <link href="http://mindumper.com/blog/2012/11/08/value/"/>
+    <updated>2012-11-08T00:00:00+08:00</updated>
+    <id>http://mindumper.com/blog/2012/11/08/value</id>
+    <content type="html"><![CDATA[<h2><code>Values</code> 与 <code>Object</code> 派生体系</h2>
 
-<p>TUT（Template Unit Tests）是一个纯 C++ 单元测试框架。</p>
-
-<ul>
-<li><p>可移植性好，对编译器和操作系统几乎没有任何依赖。</p></li>
-<li><p>完全使用 C++ 模板实现，故仅需包含头文件，不依赖特定库，部署简单。</p></li>
-<li><p>自定义报告接口，方便集成到任意 IDE 或工具。</p></li>
-<li><p>支持多进程测试。</p></li>
-<li><p>在类 BSD 许可协议下可自由发布。</p></li>
-<li><p>测试用例以具名测试组（named test groups）的方式进行组织。</p></li>
-<li><p>支持回归测试（测试所有用例），或以测试组或单个测试用例为单位。</p></li>
-<li><p>纯 C++ 实现，不使用宏。</p></li>
-<li><p>可读性好，易维护。</p></li>
-</ul>
-
-
-<h2>特性</h2>
+<p>所有 <code>Object</code> 及其派生类的逻辑数据均存储在一个 <code>Values</code> 容器（<code>_properties</code>）中，采用 key-value 形式的突出优点是灵活性高，但缺点是每次访问时需要查找，效率不高。针对这一点，有两种优化思路：</p>
 
 <ul>
-<li><p>根据测试用例的相关性分组，每个测试组有自己的名称，属于自己的编译单元。一个测试组中的测试用例数量近乎无限（取决于编译器模板最大递归深度）。</p></li>
-<li><p>用户可一次运行所有测试用例（回归测试），单个测试组或部分测试用例。</p></li>
-<li><p>支持自定义回调接口进行格式输出，实现对测试过程及结果的跟踪。</p></li>
-<li><p>作为模板库，无需编译，包含头文件 <code>&lt;tut/tut.hpp&gt;</code> 即可。</p></li>
-</ul>
+<li><p>采用或借鉴 protobuf 协议及实现，完成 Values -> protobuf -> C++ class 的代码生成机制。</p></li>
+<li><p>针对使用频率高的属性进行硬编码绑定（添加数据成员），并在 <code>set</code> 操作中同步 <code>_properties</code>，在保证所有 <code>set</code> 操作同步（即序列化）的情况下，<code>Serialize()</code> 甚至不再需要，因为 <code>_properties</code> 即序列化结果。</p>
 
-
-<h2>测试用例组织结构</h2>
-
-<p>一个单元测试项目由测试程序、测试用例、测试组组成。测试程序包含了所有测试用例，这些测试用例根据相关性组织成测试组。</p>
-
-<h3>测试程序（Test Application）</h3>
-
-<p>基于 TUT 的应用程序，用于进行自动/手动测试。</p>
-
-<h2>测试用例（Tests）</h2>
-
-<p>单个测试一般仅测试单个的特定功能，如，针对一个容器，一个测试用例用以测试在执行 <code>clear()</code> 后，调用 <code>size()</code> 返回值是否为 <code>0</code>。</p>
-
-<h3>测试组（Test Groups）</h3>
-
-<p>根据功能将所有测试用例划分为若干测试组，TUT 可直接调用具有唯一名称的测试组。通常，每个测试组对应一个 C++ 源文件。</p>
-
-<h2>编写测试程序</h2>
-
-<ul>
-<li><p>测试什么？测试应覆盖所有正确及错误的应用环境。</p></li>
-<li><p>测试驱动的开发模式是一个不错的方案。</p></li>
-</ul>
-
-
-<p>测试组定义为一个结构体/类，包含测试所需的数据作为成员。测试用例继承自测试组，从而可直接访问测试组的数据成员。</p>
-
-<pre><code><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>++ </span></figcaption>
- <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">namespace</span> <span class="n">tut</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">struct</span> <span class="n">my_test</span> <span class="p">{</span> <span class="c1">// test group</span>
-</span><span class='line'>    <span class="c1">// methods and data</span>
-</span><span class='line'>    <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">typedef</span> <span class="n">test_group</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">my_test</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">tg</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">typedef</span> <span class="n">tg</span><span class="o">::</span><span class="n">object</span> <span class="n">object</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">tg</span> <span class="n">my_group</span><span class="p">(</span><span class="s">&quot;my test&quot;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">template</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">template</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span>
-</span><span class='line'>    <span class="kt">void</span> <span class="n">object</span><span class="o">::</span><span class="n">test</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="mi">1</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;()</span> <span class="p">{</span> <span class="c1">// test</span>
-</span><span class='line'>        <span class="c1">// do something here</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">using</span> <span class="n">namespace</span> <span class="n">tut</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">namespace</span> <span class="n">tut</span> <span class="p">{</span>
-</span><span class='line'><span class="n">test_runner_singleton</span> <span class="n">runner</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">()</span> <span class="c1">// entrance of the test application</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="c1">// run all tests in all groups</span>
-</span><span class='line'>    <span class="n">runner</span><span class="p">.</span><span class="n">get</span><span class="p">().</span><span class="n">run_tests</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// run all tests in group &quot;my test&quot;</span>
-</span><span class='line'>    <span class="n">runner</span><span class="p">.</span><span class="n">get</span><span class="p">().</span><span class="n">run_tests</span><span class="p">(</span><span class="s">&quot;my test&quot;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// run test number 1 in group &quot;my test&quot;</span>
-</span><span class='line'>    <span class="n">runner</span><span class="p">.</span><span class="n">get</span><span class="p">().</span><span class="n">run_test</span><span class="p">(</span><span class="s">&quot;my test&quot;</span><span class="err">，</span><span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-</code></pre>
-
-<p>运行测试时，每个测试对象都通过测试组的默认构造函数重新创建，因此，所有前置工作都被放在默认构造函数中完成。测试完成后，无论测试是否通过，测试对象均被析构，因此，清理工作也需要被放在析构函数中完成。</p>
-
-<pre><code><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>++ </span></figcaption>
+<p>  <div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>++ </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -681,119 +804,496 @@
 <span class='line-number'>48</span>
 <span class='line-number'>49</span>
 <span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="c1">// test_player.cpp</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'>  <span class="n">class</span> <span class="n">Object</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nl">public:</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="cp">#include &amp;lt;tut/tut.hpp&amp;gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>  <span class="k">virtual</span> <span class="n">bool</span> <span class="n">Serialize</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">virtual</span> <span class="n">bool</span> <span class="n">Deserialize</span><span class="p">(</span><span class="n">Values</span> <span class="o">*</span><span class="n">vals</span><span class="p">);</span>
 </span><span class='line'>
-</span><span class='line'><span class="n">using</span> <span class="n">namespace</span> <span class="n">Elf</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">namespace</span> <span class="n">tut</span> <span class="p">{</span>
-</span><span class='line'><span class="k">struct</span> <span class="n">player</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">player</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="o">~</span><span class="n">player</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">typedef</span> <span class="n">test_group</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">player</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">factory</span><span class="p">;</span>
-</span><span class='line'><span class="k">typedef</span> <span class="n">factory</span><span class="o">::</span><span class="n">object</span> <span class="n">object</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">tut</span><span class="o">::</span><span class="n">factory</span> <span class="n">tf</span><span class="p">(</span><span class="s">&quot;player&quot;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">template</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span>
-</span><span class='line'><span class="n">template</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span>
-</span><span class='line'><span class="kt">void</span> <span class="n">object</span><span class="o">::</span><span class="n">test</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="mi">1</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">set_test_name</span><span class="p">(</span><span class="s">&quot;Load Player&quot;</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">ensure</span><span class="p">(</span><span class="n">GetObjectManager</span><span class="p">().</span><span class="n">InitDB</span><span class="p">()</span> <span class="o">==</span> <span class="n">ELF_DB_RC_OK</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">Account</span> <span class="o">*</span><span class="n">acc1</span> <span class="o">=</span> <span class="n">GetObjectManager</span><span class="p">().</span><span class="n">LoadAccount</span><span class="p">(</span><span class="s">&quot;p0001&quot;</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">Account</span> <span class="o">*</span><span class="n">acc2</span> <span class="o">=</span> <span class="n">GetObjectManager</span><span class="p">().</span><span class="n">LoadAccount</span><span class="p">(</span><span class="s">&quot;p0001&quot;</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">Account</span> <span class="o">*</span><span class="n">acc3</span> <span class="o">=</span> <span class="n">GetObjectManager</span><span class="p">().</span><span class="n">LoadAccount</span><span class="p">(</span><span class="s">&quot;p10010&quot;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">ensure</span><span class="p">(</span><span class="n">acc1</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">ensure</span><span class="p">(</span><span class="n">acc2</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">ensure</span><span class="p">(</span><span class="n">acc3</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">ensure</span><span class="p">(</span><span class="n">acc1</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">PlayerCount</span><span class="p">()</span> <span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="mi">0</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">ensure</span><span class="p">(</span><span class="n">GetObjectManager</span><span class="p">().</span><span class="n">SavePlayers</span><span class="p">(</span><span class="n">acc1</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">GetID</span><span class="p">()));</span>
-</span><span class='line'>    <span class="n">ensure</span><span class="p">(</span><span class="n">GetObjectManager</span><span class="p">().</span><span class="n">SavePlayers</span><span class="p">(</span><span class="n">acc1</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">GetID</span><span class="p">()));</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// main.cpp</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">using</span> <span class="n">namespace</span> <span class="n">tut</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">namespace</span> <span class="n">tut</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">test_runner_singleton</span> <span class="n">runner</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">void</span> <span class="n">run</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="n">console_reporter</span> <span class="n">cb</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">runner</span><span class="p">.</span><span class="n">get</span><span class="p">().</span><span class="n">set_callback</span><span class="p">(</span><span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">cb</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">try</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">strcmp</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s">&quot;all&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="n">runner</span><span class="p">.</span><span class="n">get</span><span class="p">().</span><span class="n">run_tests</span><span class="p">();</span>
-</span><span class='line'>        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-</span><span class='line'>            <span class="n">runner</span><span class="p">.</span><span class="n">get</span><span class="p">().</span><span class="n">run_tests</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">}</span> <span class="n">catch</span><span class="p">(</span><span class="k">const</span> <span class="n">tut</span><span class="o">::</span><span class="n">no_such_group</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">ex</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="s">&quot;No such group: &quot;</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">ex</span><span class="p">.</span><span class="n">what</span><span class="p">()</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span> <span class="n">catch</span><span class="p">(</span><span class="k">const</span> <span class="n">tut</span><span class="o">::</span><span class="n">tut_error</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">ex</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="s">&quot;General error: &quot;</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">ex</span><span class="p">.</span><span class="n">what</span><span class="p">()</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="n">BEGIN_CRASH_DUMP</span> <span class="p">{</span>
-</span><span class='line'>        <span class="n">elf_init</span><span class="p">();</span>
-</span><span class='line'>        <span class="n">db_init</span><span class="p">();</span>
-</span><span class='line'>        <span class="n">run</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
-</span><span class='line'>        <span class="n">db_fini</span><span class="p">();</span>
-</span><span class='line'>        <span class="n">elf_fini</span><span class="p">();</span>
-</span><span class='line'>        <span class="n">exit</span><span class="p">(</span><span class="n">EXIT_SUCCESS</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span> <span class="n">CATCH_CRASH_DUMP</span> <span class="p">{</span>
-</span><span class='line'>        <span class="n">exit</span><span class="p">(</span><span class="n">EXIT_FAILURE</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
+</span><span class='line'>  <span class="n">ELF_INL</span> <span class="k">const</span> <span class="n">uid_t</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">GetID</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_id</span><span class="p">;</span> <span class="p">}</span>
 </span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
 </span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+</span><span class='line'>  <span class="nl">protected:</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>  <span class="n">Object</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">virtual</span> <span class="o">~</span><span class="n">Object</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kt">void</span> <span class="n">SetID</span><span class="p">(</span><span class="k">const</span> <span class="n">uid_t</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">uid</span> <span class="o">=</span> <span class="n">UID_NIL</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="n">uid</span> <span class="o">==</span> <span class="n">UID_NIL</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="n">uid_create</span><span class="p">(</span><span class="n">_id</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>          <span class="n">_id</span> <span class="o">=</span> <span class="n">uid</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">uid_t</span> <span class="n">_id</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">Values</span> <span class="o">*</span><span class="n">_properties</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="p">};</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="n">class</span> <span class="n">Account</span><span class="o">:</span> <span class="n">public</span> <span class="n">Object</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nl">protected:</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>  <span class="n">Account</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">virtual</span> <span class="o">~</span><span class="n">Account</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">ELF_INL</span> <span class="kt">void</span> <span class="n">SetUser</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">user</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">_user</span> <span class="o">=</span> <span class="n">user</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">_properties</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">Set</span><span class="p">(</span><span class="s">&quot;user&quot;</span><span class="p">,</span> <span class="n">_user</span><span class="p">.</span><span class="n">c_str</span><span class="p">());</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">ELF_INL</span> <span class="kt">void</span> <span class="n">SetMail</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">mail</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">_mail</span> <span class="o">=</span> <span class="n">mail</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">_properties</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">Set</span><span class="p">(</span><span class="s">&quot;mail&quot;</span><span class="p">,</span> <span class="n">_mail</span><span class="p">.</span><span class="n">c_str</span><span class="p">());</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">_user</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">_mail</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="p">};</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p></li>
+</ul>
+
+
+<h3>关于 <code>Object</code> 派生体系的序列化与反序列化</h3>
+
+<p><em>警告</em>：由于 <code>Object</code> 及其派生类对 <code>_properties</code> 具有较强依赖，因此所有派生类的 <code>Serialize()</code> 及 <code>Deserialize()</code> 实现必须调用其父类的实现。否则，容易引起逻辑数据错误及内存使用错误。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[数据库模块]]></title>
+    <link href="http://mindumper.com/blog/2012/11/08/db/"/>
+    <updated>2012-11-08T00:00:00+08:00</updated>
+    <id>http://mindumper.com/blog/2012/11/08/db</id>
+    <content type="html"><![CDATA[<p>当前实现的数据库模块仅支持 SQLite3。</p>
+
+<h2>配置约定</h2>
+
+<p><code>CONFIG/db</code> 目录下每个子目录对应一个数据库，子目录名称即数据库名称，在每个子目录下，有若干配置文件（YAML 标记语言文件），每个配置文件对应一个数据表，文件名称即数据表名称。由数据库模块生成的 SQLite 数据库文件存储在 <code>db</code> 目录中。</p>
+
+<p>在数据库模块初始化时，如果相应的数据库不存在或为空（以 <code>ATTACH</code> 实现），则根据上述约定及配置创建数据库及数据表。</p>
+
+<p><em>警告</em>：<code>ATTACH</code> 失败的情况目前未做处理。</p>
+
+<p>强制表的第一个字段作为主键，但依然建议为第一个字段添加声明 <code>PRIMARY KEY UNIQUE</code>，以兼容 SQLite3。</p>
+
+<p><em>警告</em>：强制仅为必须遵守的约定，实现中不会进行合法性检查，违反约定的情况目前未经测试，结果不可知。</p>
+
+<h2>数据结构</h2>
+
+<p><code>Values</code> 和 <code>Table</code> 是数据库模块两种最主要的数据结构，<code>Values</code> 用来存取应用层与数据库交互的所有数据以及限定条件（<code>WHERE</code> 分句）等，<code>Table</code> 用来存取数据表结构。</p>
+
+<h3><code>Values</code></h3>
+
+<p><code>Values</code> 以 <code>map</code> 容器存储 <code>value_t</code> 表示的数据，支持以 key-value 的形式访问数据。</p>
+
+<pre><code><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>++ </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">enum</span> <span class="n">value_type_t</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">ELF_VALUE_INT</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">ELF_VALUE_FLOAT</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">ELF_VALUE_RAW</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">ELF_VALUE_TEXT</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">ELF_VALUE_UID</span><span class="p">,</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">struct</span> <span class="n">value_t</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// raw buffer</span>
+</span><span class='line'>    <span class="k">struct</span> <span class="n">raw_t</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">;</span>
+</span><span class='line'>        <span class="kt">size_t</span> <span class="n">size</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">union</span> <span class="n">data_t</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">n</span><span class="p">;</span>
+</span><span class='line'>        <span class="kt">double</span> <span class="n">f</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">raw_t</span> <span class="n">b</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>    <span class="n">data_t</span> <span class="n">data</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">value_type_t</span> <span class="n">type</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">typedef</span> <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">value_t</span> <span class="o">*&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">value_map</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</code></pre>
+
+<h4>关于数据类型的一点思考</h4>
+
+<p>出于国际化需要，在与代码执行无关时，尽量不要使用字符串，而应以资源 ID 代替，尽量避免使用复杂数据类型。</p>
+
+<p>只是为了提供一种简明高效的扩展，扩展是第二位的，简明高效是第一位的。</p>
+
+<p>毕竟，绝大多数数据都可以使用数值型，而诸如 GUID、用户类型等数据是个别的，不具有通用性和易读性，扩展意义不大。</p>
+
+<p>对于浮点型数据的处理，保留小数点后两位，进行读写运算时，可放大 100 倍后使用。甚至设计时，就可规避。</p>
+
+<h3><code>Table</code></h3>
+
+<p>与 <code>Values</code> 类似，<code>Table</code> 以 <code>vector</code> 容器存储 <code>field_t</code> 表示的字段，为了简化数据库操作，与数据表中字段顺序保持一致，在 <code>Values</code> 数据写数据库时，即通过 <code>Table</code> 完成序列化操作。</p>
+
+<pre><code><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>++ </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">struct</span> <span class="n">field_t</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">name</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">type</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">defination</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">value_type_t</span> <span class="n">ctype</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">typedef</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">field_t</span> <span class="o">*&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">field_list</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</code></pre>
+
+<h2>实现</h2>
+
+<p>目前的数据库模块支持以下接口：</p>
+
+<pre><code><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>++ </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="kt">int</span> <span class="n">db_init</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">db_fini</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">db_insert</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">cmd</span><span class="p">,</span> <span class="k">const</span> <span class="n">Elf</span><span class="o">::</span><span class="n">values_list</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">in</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">db_update</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">cmd</span><span class="p">,</span> <span class="k">const</span> <span class="n">Elf</span><span class="o">::</span><span class="n">Values</span> <span class="o">*</span><span class="n">con</span><span class="p">,</span>
+</span><span class='line'>              <span class="k">const</span> <span class="n">Elf</span><span class="o">::</span><span class="n">values_list</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">in</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">db_query</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">cmd</span><span class="p">,</span> <span class="n">Elf</span><span class="o">::</span><span class="n">values_list</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">out</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">db_select</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">cmd</span><span class="p">,</span> <span class="k">const</span> <span class="n">Elf</span><span class="o">::</span><span class="n">Values</span> <span class="o">*</span><span class="n">con</span><span class="p">,</span>
+</span><span class='line'>              <span class="n">Elf</span><span class="o">::</span><span class="n">values_list</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">out</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">db_exec</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">cmd</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">db_execsql</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">sql</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</code></pre>
+
+<h3>执行 SQL 语句</h3>
+
+<p>虽然 <code>db_execex</code> 接口支持直接执行 SQL 语句，但出于安全、方便，这种做法是不被推荐的。而且，<code>db_exec</code> 没有任何输出，因此，不支持查询等结果返回功能。对于数据库操作，推荐使用下面介绍的数据库操作命令方式。</p>
+
+<h3>数据库操作命令</h3>
+
+<h4>预定义数据库操作命令</h4>
+
+<p>数据库操作命令是为简化数据库操作而设计的，推荐格式采用点分形式：<code>db.table.command</code>。在加载数据表结构时，为每个 <code>Table</code> 对象预定义了若干常用命令：</p>
+
+<ul>
+<li><code>count</code>: <code>SELECT count(*) AS count</code></li>
+<li><code>create</code>: <code>CREATE TABLE</code></li>
+<li><code>insert</code>: <code>INSERT</code></li>
+<li><code>update</code>: <code>UPDATE</code></li>
+<li><code>select</code>: <code>SELECT * WHERE</code></li>
+<li><code>selectall</code>: <code>SELECT *</code></li>
+<li><code>display</code>: <code>display</code></li>
+</ul>
+
+
+<p>其中，最后一项 <code>display</code> 以格式化文本形式输出数据表结构。</p>
+
+<p>在使用这些预定义命令时，需要严格遵循前述点分形式，如 <code>account.user.create</code>，数据库模块将解析命令，根据数据表名称（如 <code>account.user</code>）及命令名称（如 <code>create</code>）。</p>
+
+<p>需要注意的是，目前实现中：</p>
+
+<ul>
+<li><code>count</code>：记录统计，仅支持 <code>SELECT count(*) AS count FROM table1</code> 的语义，不支持条件统计。</li>
+<li><code>insert</code>：数据插入，仅支持 <code>INSERT INTO table1 VALUES(...)</code> 的语义。</li>
+<li><code>select</code>：条件查询，仅支持 <code>WHERE column1=value1 AND column2=value2 AND ...</code> 的语义。</li>
+</ul>
+
+
+<p>可以使用下面的自定义数据库操作命令完成相应需求。</p>
+
+<h4>自定义数据库操作命令</h4>
+
+<p>如果预定义操作命令不存在，数据库模块将尝试使用自定义数据库操作命令。在 <code>CONFIG/db</code> 目录下，名为 <code>commands.yml</code> 的配置文件中可存取自定义的 SQL 语句，示例如下：</p>
+
+<pre><code><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">test</span><span class="p">:</span> <span class="no">SELECT</span> <span class="n">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="no">AS</span> <span class="n">count</span> <span class="no">FROM</span> <span class="n">account</span><span class="o">.</span><span class="n">user</span>
+</span><span class='line'><span class="n">account</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">user</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">count</span><span class="p">:</span> <span class="no">SELECT</span> <span class="n">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="no">AS</span> <span class="n">count</span> <span class="no">FROM</span> <span class="n">account</span><span class="o">.</span><span class="n">user</span>
+</span><span class='line'>    <span class="n">test_p0000</span><span class="p">:</span> <span class="no">SELECT</span> <span class="o">*</span> <span class="no">FROM</span> <span class="n">account</span><span class="o">.</span><span class="n">user</span> <span class="no">WHERE</span> <span class="n">user</span> <span class="o">=</span> <span class="s1">&#39;p0000&#39;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</code></pre>
+
+<p>如示例所示，对于自定义数据库操作命令，并不严格要求使用 <code>db.table.command</code> 的点分形式，但点分形式仍然是推荐做法。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Win8 应用程序开发]]></title>
+    <link href="http://mindumper.com/blog/2012/10/29/metro-development/"/>
+    <updated>2012-10-29T00:00:00+08:00</updated>
+    <id>http://mindumper.com/blog/2012/10/29/metro-development</id>
+    <content type="html"><![CDATA[<p><a href="http://msdn.microsoft.com/zh-CN/library/windows/apps/xaml/hh465045">使用 C++ 创建你的第一个 Windows 应用商店应用</a>
+开发一款专为 Win8 设计的博客阅读主题（使用 JS）。</p>
+
+<p>花点时间，深入了解一下 <a href="http://msdn.microsoft.com/zh-CN/library/windows/apps/xaml/hh699871">C++/CX</a></p>
+
+<p>视图驱动导航比按钮驱动导航要自然，可以表达的信息也更多。</p>
+
+<h2>XAML</h2>
+
+<p>XAML（eXtensible Application Markup Language）基于 XML，遵循 XML 语法。</p>
+
+<p>手动编写 XAML 代码，可以更好的熟悉 XAML 结构。</p>
+
+<h2>思路</h2>
+
+<p>从 XML 加载数据，用于 XAML 的数据显示。</p>
+
+<p>VS 2012 可直接读写 XML 文档。</p>
+
+<p>XML 与 yaml 可以互相转换。</p>
+
+<h3>导航</h3>
+
+<h4>网格视图</h4>
+
+<ul>
+<li>目录信息: DirectoryInfo
+
+<ul>
+<li>名称: Name</li>
+<li>描述: Description</li>
+<li>资源数: ResourceSize</li>
+<li>大小: Size</li>
+<li>最后更新时间: LastUpdateTime</li>
+</ul>
+</li>
+</ul>
+
+
+<h4>资源列表视图</h4>
+
+<ul>
+<li><p>资源信息: ResourceInfo</p>
+
+<ul>
+<li>图标: Icon</li>
+<li>名称: Name</li>
+<li>索引值: Index</li>
+<li>描述: Description</li>
+<li>大小: Size</li>
+<li>引用计数: ReferenceCount</li>
+<li>最后更新时间: LastUpdateTime</li>
+</ul>
+</li>
+<li><p>资源详细信息</p>
+
+<ul>
+<li>引用列表: ReferenceList</li>
+</ul>
+</li>
+</ul>
+
+
+<h4>索引列表视图</h4>
+
+<ul>
+<li>索引信息: IndexInfo
+
+<ul>
+<li>名称: Name</li>
+<li>索引值: Index</li>
+<li>描述: Description</li>
+<li>依赖列表: DependenceList</li>
+<li>引用计数: ReferenceCount</li>
+<li><p>最后更新时间: LastUpdateTime</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="ni">&amp;lt;</span>?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+</span><span class='line'><span class="nt">&lt;Champions</span> <span class="na">Title=</span><span class="s">&quot;Champions Overview (of LOL)&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>Champion Name=&quot;Akali&quot; Image=&quot;Assets/Images/Akali_Splash_0.jpg&quot;<span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span>      Updated=&quot;2012-11-03&quot;<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;Content&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span>关于该英雄的详细信息。
+</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;/Content&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;Abilities&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span><span class="ni">&amp;lt;</span>Ability Name=&quot;Q&quot;/<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>Ability Name=&quot;W&quot;/<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>Ability Name=&quot;E&quot;/<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>Ability Name=&quot;R&quot;/<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;/Abilities&gt;</span>
+</span><span class='line'><span class="nt">&lt;/Champion&gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>Champion Name=&quot;Annie&quot; Image=&quot;Assets/Images/Annie_Splash_0.jpg&quot;
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span>      Updated=&quot;2012-11-03&quot;<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;Content&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span>关于该英雄的详细信息。
+</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;/Content&gt;</span>
+</span><span class='line'><span class="nt">&lt;/Champion&gt;</span>
+</span><span class='line'><span class="ni">&amp;lt;</span>Champion Name=&quot;Yeti&quot; Image=&quot;Assets/Images/Yeti_Splash_0.jpg&quot;
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span>      Updated=&quot;2012-11-03&quot;<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;Content&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span>关于该英雄的详细信息。
+</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>  <span class="nt">&lt;/Content&gt;</span>
+</span><span class='line'><span class="nt">&lt;/Champion&gt;</span>
+</span><span class='line'><span class="nt">&lt;/Champions&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p></li>
+</ul>
+</li>
+</ul>
+
+
+<h2>异步编程</h2>
+
+<p>lambda 表达式</p>
+
+<h2>任务并行</h2>
+
+<p><a href="http://msdn.microsoft.com/zh-cn/library/windows/apps/xaml/hh454036.aspx">将应用程序打包</a></p>
+
+<p>StandardStyles.xaml</p>
+
+<p>默认情况下，可能很多 Style 是被注释了的，需要的话，取消注释即可。</p>
+
+<h2>访问 SkyDrive</h2>
+
+<p>Metro 应用访问 SkeyDrive 等 Live 服务，需要具有应用程序包 ID。</p>
+
+<ul>
+<li>唯一的程序包名称和发布者，二者结合称为应用程序包 ID。</li>
+<li>唯一的标识符，称为客户端 ID。</li>
+<li>重定向域，这是 API 在需要直接与应用或应用的附属网站交换令牌、数据和消息时可以使用的域。</li>
+<li>唯一的密码，称为客户端密钥。</li>
+</ul>
+
+
+<h2>HTTP 基本请求模式</h2>
+
+<p>HTTP 协议的一部分：<a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html">RFC 2616 Sec.5</a>。</p>
+
+<h2>访问 GitHub</h2>
+
+<p><a href="http://www.oschina.net/question/12_57382">设计 Metro 风格的 GitHub for Windows</a></p>
+
+<h2>为 GitHub 提供 Web 服务</h2>
+
+<h2>JSON</h2>
+
+<p><a href="http://tools.ietf.org/html/rfc4627">JSON</a></p>
+
+<p>新浪微博可以一仿。</p>
+
+<h2>coco2d-x</h2>
 ]]></content>
   </entry>
   

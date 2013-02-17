@@ -2,34 +2,38 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://mindumper.com/blog/2012/10/25/tut/</loc>
-        <lastmod>2013-01-07T18:15:12+08:00</lastmod>
+        <lastmod>2013-02-17T13:27:40+08:00</lastmod>
     </url>
     <url>
         <loc>http://mindumper.com/blog/2012/10/29/metro-development/</loc>
-        <lastmod>2013-01-07T18:15:12+08:00</lastmod>
+        <lastmod>2013-02-17T13:27:37+08:00</lastmod>
     </url>
     <url>
         <loc>http://mindumper.com/blog/2012/11/08/db/</loc>
-        <lastmod>2013-01-07T18:15:12+08:00</lastmod>
+        <lastmod>2013-02-17T13:28:03+08:00</lastmod>
     </url>
     <url>
         <loc>http://mindumper.com/blog/2012/11/08/value/</loc>
-        <lastmod>2013-01-07T18:15:12+08:00</lastmod>
+        <lastmod>2013-02-17T13:28:16+08:00</lastmod>
     </url>
     <url>
         <loc>http://mindumper.com/blog/2012/12/24/fog/</loc>
-        <lastmod>2013-01-07T18:15:12+08:00</lastmod>
+        <lastmod>2013-02-17T13:28:20+08:00</lastmod>
     </url>
     <url>
         <loc>http://mindumper.com/blog/2013/01/16/annals/</loc>
-        <lastmod>2013-01-16T17:31:43+08:00</lastmod>
+        <lastmod>2013-02-17T13:30:45+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://mindumper.com/blog/2013/02/17/pathfinding/</loc>
+        <lastmod>2013-02-17T13:34:25+08:00</lastmod>
     </url>
     <url>
         <loc>http://mindumper.com/blog/archives/</loc>
-        <lastmod>2013-01-16T17:31:43+08:00</lastmod>
+        <lastmod>2013-02-17T13:34:25+08:00</lastmod>
     </url>
     <url>
         <loc>http://mindumper.com/</loc>
-        <lastmod>2013-01-16T17:31:43+08:00</lastmod>
+        <lastmod>2013-02-17T13:34:25+08:00</lastmod>
     </url>
 </urlset>

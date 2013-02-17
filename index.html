@@ -9,7 +9,7 @@
   <meta name="author" content="Yule Fox">
 
   
-  <meta name="description" content="回顾 2012 年，除了还在坚持写代码之外，其他能够回忆起来有意义的事情乏善可陈：文件夹里的文档一堆，不过都是见不得人的半成品，以至于只能靠 SVN 的 log 来回忆。 2011 年 11 月到 2012 年 2 月，大部分时间花在网络库、其他公共库和登录服务器的重写上， &hellip;">
+  <meta name="description" content="目前的场景格式没有使用导航网格，只是基于方格。采用 A* 寻路算法时，节点是多边形网格还是普通方格唯一的区别在于路径的估价。 A* 算法可以看作是最好优先搜索（Best-First Search）的一种实现，采用启发式（Heuristic）搜索寻找给定结点到目标结点具有最低启发代价（ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +64,256 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/02/17/pathfinding/">A * 寻路</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-17T00:00:00+08:00" pubdate data-updated="true">Feb 17<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/02/17/pathfinding/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>目前的场景格式没有使用导航网格，只是基于方格。采用 A* 寻路算法时，节点是多边形网格还是普通方格唯一的区别在于路径的估价。</p>
+
+<p>A* 算法可以看作是最好优先搜索（Best-First Search）的一种实现，采用启发式（Heuristic）搜索寻找给定结点到目标结点具有最低启发代价（Heuristic Cost）的路径。</p>
+
+<h3>术语（Terms）</h3>
+
+<ul>
+<li>总代价函数 <code>f(x)</code>：起点到终点的路径代价/估价，<code>f(x) = g(x) + h(x)</code>。</li>
+<li>路径代价函数 <code>g(x)</code>：起点到最佳节点 <code>x</code> 的路径代价，已经走过的路径的实际代价。</li>
+<li>启发估价函数 <code>h(x)</code>：从 <code>x</code> 到目标节点的距离估价，未走过的路径的启发估价，最佳节点到目标节点的直线距离可以作为可接受的启发估价，最简单，虽然未必准确。</li>
+<li>开放列表（open list）：待评价的节点集合。</li>
+<li>关闭列表（closed list）：评价过的节点集合。</li>
+</ul>
+
+
+<h3>实现（Descriptions）</h3>
+
+<ol>
+<li>将起点添加到开放列表，初始化起点的 <code>f/g/h</code> 值。</li>
+<li>如果开放列表为空，寻路失败，转 9。</li>
+<li>从开放列表中选取总代价 <code>f</code> 最小的节点作为最佳节点，并将最佳节点移入关闭列表。</li>
+<li>如果最佳节点即目标节点，寻路成功，转 7。</li>
+<li>获取最佳节点的可通过邻接节点，将不在开放列表中的邻接节点加入到开放列表。</li>
+<li>遍历邻接节点，计算并更新邻接节点的估价及总代价，转 2。</li>
+<li>根据节点继承关系计算路径及关键节点，确定路径点。</li>
+<li>优化路径点（去除不必要的路径点）。</li>
+<li>结束。</li>
+</ol>
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'>    <span class="n">Path</span><span class="o">::</span><span class="n">Path</span><span class="p">(</span><span class="kt">int</span> <span class="n">idx</span><span class="p">,</span> <span class="k">const</span> <span class="n">point_t</span> <span class="o">&amp;</span><span class="n">start</span><span class="p">,</span> <span class="k">const</span> <span class="n">point_t</span> <span class="o">&amp;</span><span class="n">end</span><span class="p">)</span>
+</span><span class='line'>        <span class="o">:</span> <span class="n">_start_point</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">,</span> <span class="n">_end_point</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">_mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="o">::</span><span class="n">GetMesh</span><span class="p">(</span><span class="n">idx</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">ELF_ASSERT</span><span class="p">(</span><span class="n">_mesh</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">_start_node</span> <span class="o">=</span> <span class="n">_mesh</span><span class="o">-&gt;</span><span class="n">GetTile</span><span class="p">(</span><span class="n">start</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">_end_node</span> <span class="o">=</span> <span class="n">_mesh</span><span class="o">-&gt;</span><span class="n">GetTile</span><span class="p">(</span><span class="n">end</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">_g</span><span class="p">[</span><span class="n">_start_node</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span> <span class="c1">// cost from nodes along the best known path</span>
+</span><span class='line'>        <span class="n">_f</span><span class="p">[</span><span class="n">_start_node</span><span class="p">]</span> <span class="o">=</span> <span class="n">_mesh</span><span class="o">-&gt;</span><span class="n">Distance</span><span class="p">(</span><span class="n">_start_node</span><span class="p">,</span> <span class="n">_end_node</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// the open list initially contains the start node</span>
+</span><span class='line'>        <span class="n">_open</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">_start_node</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kt">bool</span> <span class="n">Path</span><span class="o">::</span><span class="n">FindPath</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">path_rc</span> <span class="n">rc</span> <span class="o">=</span> <span class="n">PATH_RC_FINDING</span><span class="p">;</span>
+</span><span class='line'>        <span class="kt">bool</span> <span class="n">res</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">while</span> <span class="p">((</span><span class="n">rc</span> <span class="o">=</span> <span class="n">Step</span><span class="p">())</span> <span class="o">==</span> <span class="n">PATH_RC_FINDING</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// empty loop</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">rc</span> <span class="o">==</span> <span class="n">PATH_RC_FOUND</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">ReconstructPath</span><span class="p">(</span><span class="n">_end_node</span><span class="p">);</span>
+</span><span class='line'>            <span class="n">CalculatePathPoints</span><span class="p">();</span>
+</span><span class='line'>            <span class="n">OptimizePathPoints</span><span class="p">();</span>
+</span><span class='line'>            <span class="n">res</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">res</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">Path</span><span class="o">::</span><span class="n">path_rc</span> <span class="n">Path</span><span class="o">::</span><span class="n">Step</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">_open</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span> <span class="k">return</span> <span class="n">PATH_RC_FAILED</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">CalculateCurrent</span><span class="p">();</span>
+</span><span class='line'>        <span class="n">_selected</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">_cur_node</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">_cur_node</span> <span class="o">==</span> <span class="n">_end_node</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">PATH_RC_FOUND</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">CalculateNeighbors</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">Mesh</span><span class="o">::</span><span class="n">tile_list</span><span class="o">::</span><span class="n">const_iterator</span> <span class="n">itr</span> <span class="o">=</span> <span class="n">_neighbors</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// move the current node from the open list to the closed set</span>
+</span><span class='line'>        <span class="n">_open</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">_cur_node</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">_closed</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">_cur_node</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">for</span> <span class="p">(;</span> <span class="n">itr</span> <span class="o">!=</span> <span class="n">_neighbors</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="o">++</span><span class="n">itr</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="o">*</span><span class="n">itr</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">InClosedList</span><span class="p">(</span><span class="n">n</span><span class="p">))</span> <span class="k">continue</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">// tentative g score</span>
+</span><span class='line'>            <span class="kt">float</span> <span class="n">tg</span> <span class="o">=</span> <span class="n">_g</span><span class="p">[</span><span class="n">_cur_node</span><span class="p">]</span> <span class="o">+</span> <span class="n">_mesh</span><span class="o">-&gt;</span><span class="n">Distance</span><span class="p">(</span><span class="n">_cur_node</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
+</span><span class='line'>            <span class="kt">bool</span> <span class="n">in</span> <span class="o">=</span> <span class="n">InOpenList</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">in</span> <span class="o">||</span> <span class="n">tg</span> <span class="o">&lt;</span> <span class="n">_g</span><span class="p">[</span><span class="n">n</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>                <span class="n">_came_from</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">_cur_node</span><span class="p">;</span>
+</span><span class='line'>                <span class="n">_g</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">tg</span><span class="p">;</span>
+</span><span class='line'>                <span class="n">_f</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">_g</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">+</span> <span class="n">_mesh</span><span class="o">-&gt;</span><span class="n">Distance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">_end_node</span><span class="p">);</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">in</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                    <span class="n">_open</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">PATH_RC_FINDING</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>RecastNavigation 的 A* 实现</h3>
+
+<p><a href="http://code.google.com/p/recastnavigation/">RecastNavigation</a> （下文简称 Recast）基于导航网格，如前文所述，A* 算法与节点形状无关，区别在于路径估价。</p>
+
+<p>Recast 的代价函数综合了路径点的距离与所在节点的代价（节点的地形、地貌，沼泽、草地、沙漠、公路），距离估价函数略小于两点直线距离（乘了一个因子 0.999f）。</p>
+
+<h3>带动态阻挡的寻路算法</h3>
+
+<ul>
+<li>根据动态阻挡情况，定期调整静态阻挡（将暂时被堵死的路段上的节点修改为静态阻挡，以影响寻路结果）。</li>
+<li>使用 A* 寻路，确定路径点：<code>path_points</code>。</li>
+<li>路径上没有动态阻挡，按路径点 <code>path_points</code> 移动，移除经过的路径点（<code>path_points</code>）。</li>
+<li>路径上有动态阻挡，寻找合适的转向角，确认中间节点。</li>
+<li>移动到中间节点。</li>
+<li>重新优化路径点。</li>
+</ul>
+
+
+<p>带动态阻挡的寻路实现是比较复杂的。难点在于：</p>
+
+<ul>
+<li>当前路径上有动态阻挡时，如何计算合适的转向角及新的关键节点。</li>
+<li>偏离起初的路径之后，如何尽快恢复到正轨上。</li>
+<li>结合移动对象自身体积（半径）计算通过性和路径。</li>
+</ul>
+
+
+<h3>TODO</h3>
+
+<ul>
+<li>优化最佳节点的选取，减少遍历，可使用一次冒泡（Bubble Up）。</li>
+<li>优化寻路失败情况下的效率，简单粗暴的方法是设定路径长度/开放列表节点数阈值。</li>
+</ul>
+
+
+<h3>References</h3>
+
+<ul>
+<li><a href="http://en.wikipedia.org/wiki/A*_search_algorithm">A* search algorithm</a></li>
+<li><a href="http://www.policyalmanac.org/games/aStarTutorial.htm">A* Pathfinding for Beginners</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1566,6 +1816,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/02/17/pathfinding/">A * 寻路</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/01/16/annals/">2012 年度总结</a>
       </li>
     
@@ -1579,10 +1833,6 @@
     
       <li class="post">
         <a href="/blog/2012/11/08/db/">数据库模块</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/10/29/metro-development/">Win8 应用程序开发</a>
       </li>
     
   </ul>
