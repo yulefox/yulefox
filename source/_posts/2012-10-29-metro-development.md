@@ -1,6 +1,7 @@
 ---
 title: Win8 应用程序开发
 layout: post
+categories: dev
 published: true
 
 ---
