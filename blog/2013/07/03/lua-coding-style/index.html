@@ -134,11 +134,15 @@
 </ul>
 
 
-<pre><code>
-    set sw=4
-    set st=4
-    set tabstop=4
-</code></pre>
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'>    <span class="n">set</span> <span class="n">sw</span><span class="o">=</span><span class="mi">4</span>
+</span><span class='line'>    <span class="n">set</span> <span class="n">st</span><span class="o">=</span><span class="mi">4</span>
+</span><span class='line'>    <span class="n">set</span> <span class="n">tabstop</span><span class="o">=</span><span class="mi">4</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h2>空格</h2>
@@ -150,10 +154,13 @@
 </ul>
 
 
-<pre><code>
-    spam(ham[1], {egges = 2}, {})  -- Yes
-    spam( ham[1], {egges = 2}, {} ) -- No
-</code></pre>
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'>    <span class="n">spam</span><span class="p">(</span><span class="n">ham</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">{</span><span class="n">egges</span> <span class="o">=</span> <span class="mi">2</span><span class="p">},</span> <span class="p">{})</span>  <span class="c1">-- Yes</span>
+</span><span class='line'>    <span class="n">spam</span><span class="p">(</span> <span class="n">ham</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">{</span><span class="n">egges</span> <span class="o">=</span> <span class="mi">2</span><span class="p">},</span> <span class="p">{}</span> <span class="p">)</span> <span class="c1">-- No</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <ul>
@@ -161,10 +168,13 @@
 </ul>
 
 
-<pre><code>
-    local x, y = self:get_position() -- Yes
-    local x , y = self : get_position()-- No
-</code></pre>
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'>    <span class="kd">local</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">self</span><span class="p">:</span><span class="n">get_position</span><span class="p">()</span> <span class="c1">-- Yes</span>
+</span><span class='line'>    <span class="kd">local</span> <span class="n">x</span> <span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">self</span> <span class="p">:</span> <span class="n">get_position</span><span class="p">()</span><span class="c1">-- No</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <ul>
@@ -172,12 +182,17 @@
 </ul>
 
 
-<pre><code>
-    handle_event(ev) -- Yes
-    handle_event (ev) -- No
-    local skillpro = skill_setting[11001] -- Yes
-    local skillpro = skill_setting [11001] -- No
-</code></pre>
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'>    <span class="n">handle_event</span><span class="p">(</span><span class="n">ev</span><span class="p">)</span> <span class="c1">-- Yes</span>
+</span><span class='line'>    <span class="n">handle_event</span> <span class="p">(</span><span class="n">ev</span><span class="p">)</span> <span class="c1">-- No</span>
+</span><span class='line'>    <span class="kd">local</span> <span class="n">skillpro</span> <span class="o">=</span> <span class="n">skill_setting</span><span class="p">[</span><span class="mi">11001</span><span class="p">]</span> <span class="c1">-- Yes</span>
+</span><span class='line'>    <span class="kd">local</span> <span class="n">skillpro</span> <span class="o">=</span> <span class="n">skill_setting</span> <span class="p">[</span><span class="mi">11001</span><span class="p">]</span> <span class="c1">-- No</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <ul>
@@ -185,10 +200,13 @@
 </ul>
 
 
-<pre><code>
-    x == 1 -- Yes
-    x<1 -- No
-</code></pre>
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'>    <span class="n">x</span> <span class="o">==</span> <span class="mi">1</span> <span class="c1">-- Yes</span>
+</span><span class='line'>    <span class="n">x</span><span class="o">&lt;</span><span class="mi">1</span> <span class="c1">-- No</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h2>空行</h2>
@@ -203,7 +221,28 @@
 
 <h2>括号</h2>
 
-<p><strong>Tip</strong> 大括号的使用</p>
+<p><strong>Tip</strong> 左大括号不能出现在行首：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'>    <span class="n">S</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">ability</span> <span class="o">=</span> <span class="p">{},</span>
+</span><span class='line'>        <span class="n">buff</span> <span class="o">=</span> <span class="p">{},</span>
+</span><span class='line'>        <span class="n">effect</span> <span class="o">=</span> <span class="p">{},</span>
+</span><span class='line'>        <span class="n">item</span> <span class="o">=</span> <span class="p">{},</span>
+</span><span class='line'>        <span class="n">missile</span> <span class="o">=</span> <span class="p">{},</span>
+</span><span class='line'>        <span class="n">summon</span> <span class="o">=</span> <span class="p">{},</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h2>注释</h2>
 
@@ -214,13 +253,17 @@
 </ul>
 
 
-<pre><code>
-    -- register a timer
-    scheduler()
-
-    get_position() -- get the position of object
-
-</code></pre>
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'>    <span class="c1">-- register a timer</span>
+</span><span class='line'>    <span class="n">scheduler</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">get_position</span><span class="p">()</span> <span class="c1">-- get the position of object</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <ul>
@@ -228,159 +271,306 @@
 </ul>
 
 
-<pre><code>
-    --[[
-    --! @function aoe_attack
-    --! @brief do a AOE attack
-    --! @param x coordinate
-    --! @param y coordinate
-    --! @param shap range of AOE attack
-    --! @param attacker_id id of attacker
-    --! @param skill_id id of current skill
-    --! @return true if success, else return false
-    --]]
-    function aoe_attack(x, y, shape, attacker_id, skill_id)
-    end
-</code></pre>
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'>    <span class="cm">--[[</span>
+</span><span class='line'><span class="cm">    --! @function aoe_attack</span>
+</span><span class='line'><span class="cm">    --! @brief do a AOE attack</span>
+</span><span class='line'><span class="cm">    --! @param x coordinate</span>
+</span><span class='line'><span class="cm">    --! @param y coordinate</span>
+</span><span class='line'><span class="cm">    --! @param shap range of AOE attack</span>
+</span><span class='line'><span class="cm">    --! @param attacker_id id of attacker</span>
+</span><span class='line'><span class="cm">    --! @param skill_id id of current skill</span>
+</span><span class='line'><span class="cm">    --! @return true if success, else return false</span>
+</span><span class='line'><span class="cm">    --]]</span>
+</span><span class='line'>    <span class="k">function</span> <span class="nf">aoe_attack</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">attacker_id</span><span class="p">,</span> <span class="n">skill_id</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h2>示例</h2>
 
-<pre><code>
-    --[[
-    --! @file init.lua
-    --! @brief 初始化脚本模块
-    --]]
-
-    S = {
-        ability = {},
-        buff = {},
-        effect = {},
-        item = {},
-        missile = {},
-        summon = {},
-    }
-
-    S.ENV = {
-        PATH = "scripts", -- 脚本根目录
-    }
-
-    --[[
-    --! @function copyfile
-    --! @brief 复制 `file` 表，以插入到文件列表中
-    --! @param file 待复制的 `file` 表
-    --! @return 复制的 `file` 表
-    --]]
-    local function copyfile(file)
-        return {
-            dir = file.dir,
-            path = file.path,
-            name = file.name,
-            ext = file.ext,
-            scope = file.scope,
-            mod = file.mod
-        }
-    end
-
-    --[[
-    --! @function listfiles
-    --! @brief 获取指定目录下的脚本文件列表（含子目录）
-    --! @return 脚本文件列表
-    --]]
-    local function listfiles()
-        -- 将指定目录下的文件列表输出到 `tmp` 文件以备处理
-        local path = S.ENV.PATH
-        local file = {}
-        local files = {}
-
-        os.execute('dir "' .. path .. '" /s > tmp')
-        io.input("tmp")
-
-        -- 过滤所有文件
-        for line in io.lines() do
-            -- 匹配目录
-            local dir = string.match(line, "^%s*.+(" .. path .. ".*)%s+")
-
-            if dir then
-                file.dir = dir
-                file.scope = string.gsub(dir, "\\", ".")
-            end
-
-            -- 匹配文件
-            file.name, file.ext = string.match(line,
-            "^%d%d%d%d.%d%d.%d%d%s-%d%d:%d%d%s-[%d%,]+%s+(.+)%.(.+)%s-$")
-            if file.name and file.ext == 'lua' then
-                file.path = string.gsub("$dir\\$name.$ext", "%$(%w+)", file)
-                file.mod = string.gsub("$scope.$name", "%$(%w+)", file)
-                table.insert(files, copyfile(file))
-            end
-        end
-        table.remove(files, 1)
-        return files
-    end
-
-    --[[
-    --! @function listfunctions
-    --! @brief 显示指定表中的函数列表
-    --]]
-    local listfunctions
-    function listfunctions(name, tab, lev)
-        if name == "_M" then
-            return
-        end
-
-        local ind = ""
-        for i = 1, lev do
-            ind = ind .. "\t"
-        end
-        print(ind .. name)
-
-        -- 显示函数列表
-        local i = 0
-        for n, t in pairs(tab) do
-            if type(t) == "function" then
-                i = i + 1
-                print(ind .. i, n)
-            end
-        end
-
-        -- 递归处理子表
-        for n, t in pairs(tab) do
-            if type(t) == "table" then
-                listfunctions(n, t, lev + 1)
-            end
-        end
-    end
-
-    --[[
-    --! @function stat
-    --! @brief 输出统计信息
-    --]]
-    local function stat()
-        for n, t in pairs(S) do
-            if type(t) == "table" then
-                listfunctions(n, t, 0)
-            end
-        end
-    end
-
-    --[[
-    --! @function init
-    --! @brief 初始化入口函数
-    --]]
-    local function init()
-        local files = listfiles()
-        for _, file in pairs(files) do
-            require(file.mod)
-        end
-    end
-
-    init()
-    stat()
-
-    S.ability.cast(10000, 100)
-    os.execute("pause")
-</code></pre>
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'>    <span class="cm">--[[</span>
+</span><span class='line'><span class="cm">    --! @file init.lua</span>
+</span><span class='line'><span class="cm">    --! @brief 初始化脚本模块</span>
+</span><span class='line'><span class="cm">    --]]</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">S</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">ability</span> <span class="o">=</span> <span class="p">{},</span>
+</span><span class='line'>        <span class="n">buff</span> <span class="o">=</span> <span class="p">{},</span>
+</span><span class='line'>        <span class="n">effect</span> <span class="o">=</span> <span class="p">{},</span>
+</span><span class='line'>        <span class="n">item</span> <span class="o">=</span> <span class="p">{},</span>
+</span><span class='line'>        <span class="n">missile</span> <span class="o">=</span> <span class="p">{},</span>
+</span><span class='line'>        <span class="n">summon</span> <span class="o">=</span> <span class="p">{},</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">S</span><span class="p">.</span><span class="n">ENV</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">PATH</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">scripts&quot;</span><span class="p">,</span> <span class="c1">-- 脚本根目录</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">--[[</span>
+</span><span class='line'><span class="cm">    --! @function copyfile</span>
+</span><span class='line'><span class="cm">    --! @brief 复制 `file` 表，以插入到文件列表中</span>
+</span><span class='line'><span class="cm">    --! @param file 待复制的 `file` 表</span>
+</span><span class='line'><span class="cm">    --! @return 复制的 `file` 表</span>
+</span><span class='line'><span class="cm">    --]]</span>
+</span><span class='line'>    <span class="kd">local</span> <span class="k">function</span> <span class="nf">copyfile</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">return</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">dir</span> <span class="o">=</span> <span class="n">file</span><span class="p">.</span><span class="n">dir</span><span class="p">,</span>
+</span><span class='line'>            <span class="n">path</span> <span class="o">=</span> <span class="n">file</span><span class="p">.</span><span class="n">path</span><span class="p">,</span>
+</span><span class='line'>            <span class="n">name</span> <span class="o">=</span> <span class="n">file</span><span class="p">.</span><span class="n">name</span><span class="p">,</span>
+</span><span class='line'>            <span class="n">ext</span> <span class="o">=</span> <span class="n">file</span><span class="p">.</span><span class="n">ext</span><span class="p">,</span>
+</span><span class='line'>            <span class="n">scope</span> <span class="o">=</span> <span class="n">file</span><span class="p">.</span><span class="n">scope</span><span class="p">,</span>
+</span><span class='line'>            <span class="n">mod</span> <span class="o">=</span> <span class="n">file</span><span class="p">.</span><span class="n">mod</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">--[[</span>
+</span><span class='line'><span class="cm">    --! @function listfiles</span>
+</span><span class='line'><span class="cm">    --! @brief 获取指定目录下的脚本文件列表（含子目录）</span>
+</span><span class='line'><span class="cm">    --! @return 脚本文件列表</span>
+</span><span class='line'><span class="cm">    --]]</span>
+</span><span class='line'>    <span class="kd">local</span> <span class="k">function</span> <span class="nf">listfiles</span><span class="p">()</span>
+</span><span class='line'>        <span class="c1">-- 将指定目录下的文件列表输出到 `tmp` 文件以备处理</span>
+</span><span class='line'>        <span class="kd">local</span> <span class="n">path</span> <span class="o">=</span> <span class="n">S</span><span class="p">.</span><span class="n">ENV</span><span class="p">.</span><span class="n">PATH</span>
+</span><span class='line'>        <span class="kd">local</span> <span class="n">file</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'>        <span class="kd">local</span> <span class="n">files</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nb">os.execute</span><span class="p">(</span><span class="s1">&#39;</span><span class="s">dir &quot;&#39;</span> <span class="o">..</span> <span class="n">path</span> <span class="o">..</span> <span class="s1">&#39;</span><span class="s">&quot; /s &gt; tmp&#39;</span><span class="p">)</span>
+</span><span class='line'>        <span class="nb">io.input</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">tmp&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">-- 过滤所有文件</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">line</span> <span class="k">in</span> <span class="nb">io.lines</span><span class="p">()</span> <span class="k">do</span>
+</span><span class='line'>            <span class="c1">-- 匹配目录</span>
+</span><span class='line'>            <span class="kd">local</span> <span class="n">dir</span> <span class="o">=</span> <span class="nb">string.match</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">^%s*.+(&quot;</span> <span class="o">..</span> <span class="n">path</span> <span class="o">..</span> <span class="s2">&quot;</span><span class="s">.*)%s+&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">if</span> <span class="n">dir</span> <span class="k">then</span>
+</span><span class='line'>                <span class="n">file</span><span class="p">.</span><span class="n">dir</span> <span class="o">=</span> <span class="n">dir</span>
+</span><span class='line'>                <span class="n">file</span><span class="p">.</span><span class="n">scope</span> <span class="o">=</span> <span class="nb">string.gsub</span><span class="p">(</span><span class="n">dir</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">.&quot;</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">-- 匹配文件</span>
+</span><span class='line'>            <span class="n">file</span><span class="p">.</span><span class="n">name</span><span class="p">,</span> <span class="n">file</span><span class="p">.</span><span class="n">ext</span> <span class="o">=</span> <span class="nb">string.match</span><span class="p">(</span><span class="n">line</span><span class="p">,</span>
+</span><span class='line'>            <span class="s2">&quot;</span><span class="s">^%d%d%d%d.%d%d.%d%d%s-%d%d:%d%d%s-[%d%,]+%s+(.+)%.(.+)%s-$&quot;</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">file</span><span class="p">.</span><span class="n">name</span> <span class="ow">and</span> <span class="n">file</span><span class="p">.</span><span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;</span><span class="s">lua&#39;</span> <span class="k">then</span>
+</span><span class='line'>                <span class="n">file</span><span class="p">.</span><span class="n">path</span> <span class="o">=</span> <span class="nb">string.gsub</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">$dir</span><span class="se">\\</span><span class="s">$name.$ext&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">%$(%w+)&quot;</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+</span><span class='line'>                <span class="n">file</span><span class="p">.</span><span class="n">mod</span> <span class="o">=</span> <span class="nb">string.gsub</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">$scope.$name&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">%$(%w+)&quot;</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+</span><span class='line'>                <span class="nb">table.insert</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">copyfile</span><span class="p">(</span><span class="n">file</span><span class="p">))</span>
+</span><span class='line'>            <span class="k">end</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>        <span class="nb">table.remove</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">files</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">--[[</span>
+</span><span class='line'><span class="cm">    --! @function listfunctions</span>
+</span><span class='line'><span class="cm">    --! @brief 显示指定表中的函数列表</span>
+</span><span class='line'><span class="cm">    --]]</span>
+</span><span class='line'>    <span class="kd">local</span> <span class="n">listfunctions</span>
+</span><span class='line'>    <span class="k">function</span> <span class="nf">listfunctions</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tab</span><span class="p">,</span> <span class="n">lev</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="s">_M&quot;</span> <span class="k">then</span>
+</span><span class='line'>            <span class="k">return</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="kd">local</span> <span class="n">ind</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">&quot;</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">lev</span> <span class="k">do</span>
+</span><span class='line'>            <span class="n">ind</span> <span class="o">=</span> <span class="n">ind</span> <span class="o">..</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s">&quot;</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>        <span class="nb">print</span><span class="p">(</span><span class="n">ind</span> <span class="o">..</span> <span class="n">name</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">-- 显示函数列表</span>
+</span><span class='line'>        <span class="kd">local</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">t</span> <span class="k">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">tab</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="s">function&quot;</span> <span class="k">then</span>
+</span><span class='line'>                <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class='line'>                <span class="nb">print</span><span class="p">(</span><span class="n">ind</span> <span class="o">..</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">end</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">-- 递归处理子表</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">t</span> <span class="k">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">tab</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="s">table&quot;</span> <span class="k">then</span>
+</span><span class='line'>                <span class="n">listfunctions</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">lev</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">end</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">--[[</span>
+</span><span class='line'><span class="cm">    --! @function stat</span>
+</span><span class='line'><span class="cm">    --! @brief 输出统计信息</span>
+</span><span class='line'><span class="cm">    --]]</span>
+</span><span class='line'>    <span class="kd">local</span> <span class="k">function</span> <span class="nf">stat</span><span class="p">()</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">t</span> <span class="k">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">S</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="s">table&quot;</span> <span class="k">then</span>
+</span><span class='line'>                <span class="n">listfunctions</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">end</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">--[[</span>
+</span><span class='line'><span class="cm">    --! @function init</span>
+</span><span class='line'><span class="cm">    --! @brief 初始化入口函数</span>
+</span><span class='line'><span class="cm">    --]]</span>
+</span><span class='line'>    <span class="kd">local</span> <span class="k">function</span> <span class="nf">init</span><span class="p">()</span>
+</span><span class='line'>        <span class="kd">local</span> <span class="n">files</span> <span class="o">=</span> <span class="n">listfiles</span><span class="p">()</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">file</span> <span class="k">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">files</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>            <span class="nb">require</span><span class="p">(</span><span class="n">file</span><span class="p">.</span><span class="n">mod</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">init</span><span class="p">()</span>
+</span><span class='line'>    <span class="n">stat</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">S</span><span class="p">.</span><span class="n">ability</span><span class="p">.</span><span class="n">cast</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+</span><span class='line'>    <span class="nb">os.execute</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">pause&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
 
 
 
