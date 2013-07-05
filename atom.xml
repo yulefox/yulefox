@@ -4,7 +4,7 @@
   <title><![CDATA[Fox's Blog]]></title>
   <link href="http://mindumper.com/atom.xml" rel="self"/>
   <link href="http://mindumper.com/"/>
-  <updated>2013-02-17T13:37:13+08:00</updated>
+  <updated>2013-07-05T10:50:13+08:00</updated>
   <id>http://mindumper.com/</id>
   <author>
     <name><![CDATA[Yule Fox]]></name>
@@ -12,6 +12,226 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Lua 编程规范]]></title>
+    <link href="http://mindumper.com/blog/2013/07/03/lua-coding-style/"/>
+    <updated>2013-07-03T00:00:00+08:00</updated>
+    <id>http://mindumper.com/blog/2013/07/03/lua-coding-style</id>
+    <content type="html"><![CDATA[<h2>概述</h2>
+
+<h2>命名</h2>
+
+<ul>
+<li><p>模块名/文件名/变量名/函数名等标识符采用同一命名规则。借鉴 Lua 内置库函数命名规则，使用小写标识，可适当使用缩写单词，但不应影响辨识。对于明显违反此约定的匈牙利命名法、驼峰命名法等明确禁止， 传统 C 语言命名方式也不提倡使用。</p></li>
+<li><p>所有标识均不应以 <code>_</code> 及 <code>__</code> 打头。</p></li>
+</ul>
+
+
+<h2>行的长度</h2>
+
+<ul>
+<li>所有语言都应当遵循行的最大长度 80 字符的限定。</li>
+</ul>
+
+
+<h2>缩进</h2>
+
+<ul>
+<li>使用空格缩进。</li>
+<li>tab 长度为 4。</li>
+<li><p>vim 的设定为：</p>
+
+<p>  set sw=4
+  set st=4
+  set tabstop=4</p></li>
+</ul>
+
+
+<h2>空格</h2>
+
+<h2>空行</h2>
+
+<h2>括号</h2>
+
+<h2>注释</h2>
+
+<p>&#8211;[[</p>
+
+<pre><code>@file init.lua
+@brief 初始化脚本模块
+</code></pre>
+
+<p>&#8211;]]</p>
+
+<p>S = {</p>
+
+<pre><code>ability = {},
+buff = {},
+effect = {},
+item = {},
+missile = {},
+summon = {},
+</code></pre>
+
+<p>}</p>
+
+<p>S.ENV = {</p>
+
+<pre><code>PATH = "scripts", -- 脚本根目录
+</code></pre>
+
+<p>}</p>
+
+<p>&#8211;[[</p>
+
+<pre><code>@function copyfile
+@brief 复制 `file` 表，以插入到文件列表中
+@param file 待复制的 `file` 表
+@return 复制的 `file` 表
+</code></pre>
+
+<p>&#8211;]]
+local function copyfile(file)</p>
+
+<pre><code>return {
+    dir = file.dir,
+    path = file.path,
+    name = file.name,
+    ext = file.ext,
+    scope = file.scope,
+    mod = file.mod
+}
+</code></pre>
+
+<p>end</p>
+
+<p>&#8211;[[</p>
+
+<pre><code>@function listfiles
+@brief 获取指定目录下的脚本文件列表（含子目录）
+@return 脚本文件列表
+</code></pre>
+
+<p>&#8211;]]
+local function listfiles()</p>
+
+<pre><code>-- 将指定目录下的文件列表输出到 `tmp` 文件以备处理
+local path = S.ENV.PATH
+local file = {}
+local files = {}
+
+os.execute('dir "' .. path .. '" /s &gt; tmp')
+io.input("tmp")
+
+-- 过滤所有文件
+for line in io.lines() do
+    -- 匹配目录
+    local dir = string.match(line, "^%s*.+(" .. path .. ".*)%s+")
+
+    if dir then
+        file.dir = dir
+        file.scope = string.gsub(dir, "\\", ".")
+    end
+
+    -- 匹配文件
+    file.name, file.ext = string.match(line,
+    "^%d%d%d%d.%d%d.%d%d%s-%d%d:%d%d%s-[%d%,]+%s+(.+)%.(.+)%s-$")
+    if file.name and file.ext == 'lua' then
+        file.path = string.gsub("$dir\\$name.$ext", "%$(%w+)", file)
+        file.mod = string.gsub("$scope.$name", "%$(%w+)", file)
+        table.insert(files, copyfile(file))
+    end
+end
+table.remove(files, 1)
+return files
+</code></pre>
+
+<p>end</p>
+
+<p>&#8211;[[</p>
+
+<pre><code>@function listfunctions
+@brief 显示指定表中的函数列表
+</code></pre>
+
+<p>&#8211;]]
+local listfunctions
+function listfunctions(name, tab, lev)</p>
+
+<pre><code>if name == "_M" then
+    return
+end
+
+local ind = ""
+for i = 1, lev do
+    ind = ind .. "\t"
+end
+print(ind .. name)
+
+-- 显示函数列表
+local i = 0
+for n, t in pairs(tab) do
+    if type(t) == "function" then
+        i = i + 1
+        print(ind .. i, n)
+    end
+end
+
+-- 递归处理子表
+for n, t in pairs(tab) do
+    if type(t) == "table" then
+        listfunctions(n, t, lev + 1)
+    end
+end
+</code></pre>
+
+<p>end</p>
+
+<p>&#8211;[[</p>
+
+<pre><code>@function stat
+@brief 输出统计信息
+</code></pre>
+
+<p>&#8211;]]
+local function stat()</p>
+
+<pre><code>for n, t in pairs(S) do
+    if type(t) == "table" then
+        listfunctions(n, t, 0)
+    end
+end
+</code></pre>
+
+<p>end</p>
+
+<p>&#8211;[[</p>
+
+<pre><code>@function init
+@brief 初始化入口函数
+</code></pre>
+
+<p>&#8211;]]
+local function init()</p>
+
+<pre><code>local files = listfiles()
+for _, file in pairs(files) do
+    require(file.mod)
+end
+</code></pre>
+
+<p>end</p>
+
+<p>init()
+stat()</p>
+
+<p>S.ability.cast(10000, 100)
+os.execute(&#8220;pause&#8221;)</p>
+
+<hr />
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[A * 寻路]]></title>

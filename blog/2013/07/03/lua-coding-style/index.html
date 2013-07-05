@@ -5,15 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Blog Archive - Fox's Blog</title>
+  <title>Lua 编程规范 - Fox's Blog</title>
   <meta name="author" content="Yule Fox">
 
   
-  <meta name="description" content="Blog Archive 2013 Lua 编程规范
-Jul 03 2013 A * 寻路
-Feb 17 2013 posted in dev 2012 年度总结
-Jan 16 2013 posted in essay 2012 视野
-Dec 24 2012 posted in dev &hellip;">
+  <meta name="description" content="概述 命名 模块名/文件名/变量名/函数名等标识符采用同一命名规则。借鉴 Lua 内置库函数命名规则，使用小写标识，可适当使用缩写单词，但不应影响辨识。对于明显违反此约定的匈牙利命名法、驼峰命名法等明确禁止， 传统 C 语言命名方式也不提倡使用。
+所有标识均不应以 _ 及 __ 打头。 行的长度 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -22,7 +19,7 @@ Dec 24 2012 posted in dev &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://mindumper.com/blog/archives/">
+  <link rel="canonical" href="http://mindumper.com/blog/2013/07/03/lua-coding-style/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -79,132 +76,287 @@ Dec 24 2012 posted in dev &hellip;">
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Blog Archive</h1>
+    
+      <h1 class="entry-title">Lua 编程规范</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-03T00:00:00+08:00" pubdate data-updated="true">Jul 3<span>rd</span>, 2013</time>
+        
+      </p>
     
   </header>
-  
-  <div id="blog-archives">
 
 
+<div class="entry-content"><h2>概述</h2>
 
-  
-  <h2>2013</h2>
+<h2>命名</h2>
 
-<article>
-  
-<h1><a href="/blog/2013/07/03/lua-coding-style/">Lua 编程规范</a></h1>
-<time datetime="2013-07-03T00:00:00+08:00" pubdate><span class='month'>Jul</span> <span class='day'>03</span> <span class='year'>2013</span></time>
-
-
-</article>
+<ul>
+<li><p>模块名/文件名/变量名/函数名等标识符采用同一命名规则。借鉴 Lua 内置库函数命名规则，使用小写标识，可适当使用缩写单词，但不应影响辨识。对于明显违反此约定的匈牙利命名法、驼峰命名法等明确禁止， 传统 C 语言命名方式也不提倡使用。</p></li>
+<li><p>所有标识均不应以 <code>_</code> 及 <code>__</code> 打头。</p></li>
+</ul>
 
 
+<h2>行的长度</h2>
 
-<article>
-  
-<h1><a href="/blog/2013/02/17/pathfinding/">A * 寻路</a></h1>
-<time datetime="2013-02-17T00:00:00+08:00" pubdate><span class='month'>Feb</span> <span class='day'>17</span> <span class='year'>2013</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/dev/'>dev</a></span>
-</footer>
+<ul>
+<li>所有语言都应当遵循行的最大长度 80 字符的限定。</li>
+</ul>
 
 
-</article>
+<h2>缩进</h2>
+
+<ul>
+<li>使用空格缩进。</li>
+<li>tab 长度为 4。</li>
+<li><p>vim 的设定为：</p>
+
+<p>  set sw=4
+  set st=4
+  set tabstop=4</p></li>
+</ul>
 
 
+<h2>空格</h2>
 
-<article>
-  
-<h1><a href="/blog/2013/01/16/annals/">2012 年度总结</a></h1>
-<time datetime="2013-01-16T00:00:00+08:00" pubdate><span class='month'>Jan</span> <span class='day'>16</span> <span class='year'>2013</span></time>
+<h2>空行</h2>
 
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/essay/'>essay</a></span>
-</footer>
+<h2>括号</h2>
 
+<h2>注释</h2>
 
-</article>
+<p>&#8211;[[</p>
 
+<pre><code>@file init.lua
+@brief 初始化脚本模块
+</code></pre>
 
+<p>&#8211;]]</p>
 
-  
-  <h2>2012</h2>
+<p>S = {</p>
 
-<article>
-  
-<h1><a href="/blog/2012/12/24/fog/">视野</a></h1>
-<time datetime="2012-12-24T00:00:00+08:00" pubdate><span class='month'>Dec</span> <span class='day'>24</span> <span class='year'>2012</span></time>
+<pre><code>ability = {},
+buff = {},
+effect = {},
+item = {},
+missile = {},
+summon = {},
+</code></pre>
 
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/dev/'>dev</a></span>
-</footer>
+<p>}</p>
 
+<p>S.ENV = {</p>
 
-</article>
+<pre><code>PATH = "scripts", -- 脚本根目录
+</code></pre>
 
+<p>}</p>
 
+<p>&#8211;[[</p>
 
-<article>
-  
-<h1><a href="/blog/2012/11/08/value/">Values & Object</a></h1>
-<time datetime="2012-11-08T00:00:00+08:00" pubdate><span class='month'>Nov</span> <span class='day'>08</span> <span class='year'>2012</span></time>
+<pre><code>@function copyfile
+@brief 复制 `file` 表，以插入到文件列表中
+@param file 待复制的 `file` 表
+@return 复制的 `file` 表
+</code></pre>
 
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/dev/'>dev</a></span>
-</footer>
+<p>&#8211;]]
+local function copyfile(file)</p>
 
+<pre><code>return {
+    dir = file.dir,
+    path = file.path,
+    name = file.name,
+    ext = file.ext,
+    scope = file.scope,
+    mod = file.mod
+}
+</code></pre>
 
-</article>
+<p>end</p>
 
+<p>&#8211;[[</p>
 
+<pre><code>@function listfiles
+@brief 获取指定目录下的脚本文件列表（含子目录）
+@return 脚本文件列表
+</code></pre>
 
-<article>
-  
-<h1><a href="/blog/2012/11/08/db/">数据库模块</a></h1>
-<time datetime="2012-11-08T00:00:00+08:00" pubdate><span class='month'>Nov</span> <span class='day'>08</span> <span class='year'>2012</span></time>
+<p>&#8211;]]
+local function listfiles()</p>
 
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/dev/'>dev</a></span>
-</footer>
+<pre><code>-- 将指定目录下的文件列表输出到 `tmp` 文件以备处理
+local path = S.ENV.PATH
+local file = {}
+local files = {}
 
+os.execute('dir "' .. path .. '" /s &gt; tmp')
+io.input("tmp")
 
-</article>
+-- 过滤所有文件
+for line in io.lines() do
+    -- 匹配目录
+    local dir = string.match(line, "^%s*.+(" .. path .. ".*)%s+")
 
+    if dir then
+        file.dir = dir
+        file.scope = string.gsub(dir, "\\", ".")
+    end
 
+    -- 匹配文件
+    file.name, file.ext = string.match(line,
+    "^%d%d%d%d.%d%d.%d%d%s-%d%d:%d%d%s-[%d%,]+%s+(.+)%.(.+)%s-$")
+    if file.name and file.ext == 'lua' then
+        file.path = string.gsub("$dir\\$name.$ext", "%$(%w+)", file)
+        file.mod = string.gsub("$scope.$name", "%$(%w+)", file)
+        table.insert(files, copyfile(file))
+    end
+end
+table.remove(files, 1)
+return files
+</code></pre>
 
-<article>
-  
-<h1><a href="/blog/2012/10/29/metro-development/">Win8 应用程序开发</a></h1>
-<time datetime="2012-10-29T00:00:00+08:00" pubdate><span class='month'>Oct</span> <span class='day'>29</span> <span class='year'>2012</span></time>
+<p>end</p>
 
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/dev/'>dev</a></span>
-</footer>
+<p>&#8211;[[</p>
 
+<pre><code>@function listfunctions
+@brief 显示指定表中的函数列表
+</code></pre>
 
-</article>
+<p>&#8211;]]
+local listfunctions
+function listfunctions(name, tab, lev)</p>
 
+<pre><code>if name == "_M" then
+    return
+end
 
+local ind = ""
+for i = 1, lev do
+    ind = ind .. "\t"
+end
+print(ind .. name)
 
-<article>
-  
-<h1><a href="/blog/2012/10/25/tut/">TUT 初探</a></h1>
-<time datetime="2012-10-25T00:00:00+08:00" pubdate><span class='month'>Oct</span> <span class='day'>25</span> <span class='year'>2012</span></time>
+-- 显示函数列表
+local i = 0
+for n, t in pairs(tab) do
+    if type(t) == "function" then
+        i = i + 1
+        print(ind .. i, n)
+    end
+end
 
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/dev/'>dev</a></span>
-</footer>
+-- 递归处理子表
+for n, t in pairs(tab) do
+    if type(t) == "table" then
+        listfunctions(n, t, lev + 1)
+    end
+end
+</code></pre>
 
+<p>end</p>
 
-</article>
+<p>&#8211;[[</p>
 
+<pre><code>@function stat
+@brief 输出统计信息
+</code></pre>
+
+<p>&#8211;]]
+local function stat()</p>
+
+<pre><code>for n, t in pairs(S) do
+    if type(t) == "table" then
+        listfunctions(n, t, 0)
+    end
+end
+</code></pre>
+
+<p>end</p>
+
+<p>&#8211;[[</p>
+
+<pre><code>@function init
+@brief 初始化入口函数
+</code></pre>
+
+<p>&#8211;]]
+local function init()</p>
+
+<pre><code>local files = listfiles()
+for _, file in pairs(files) do
+    require(file.mod)
+end
+</code></pre>
+
+<p>end</p>
+
+<p>init()
+stat()</p>
+
+<p>S.ability.cast(10000, 100)
+os.execute(&#8220;pause&#8221;)</p>
+
+<hr />
 </div>
 
+
+  <footer>
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">Yule Fox</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-03T00:00:00+08:00" pubdate data-updated="true">Jul 3<span>rd</span>, 2013</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/02/17/pathfinding/" title="Previous Post: A * 寻路">&laquo; A * 寻路</a>
+      
+      
+    </p>
+  </footer>
 </article>
 
 </div>
