@@ -4,7 +4,7 @@
   <title><![CDATA[Fox's Blog]]></title>
   <link href="http://mindumper.com/atom.xml" rel="self"/>
   <link href="http://mindumper.com/"/>
-  <updated>2013-07-05T14:01:32+08:00</updated>
+  <updated>2013-07-18T20:28:42+08:00</updated>
   <id>http://mindumper.com/</id>
   <author>
     <name><![CDATA[Yule Fox]]></name>
@@ -12,6 +12,273 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Lua 的面向对象编程]]></title>
+    <link href="http://mindumper.com/blog/2013/07/08/lua-oop/"/>
+    <updated>2013-07-08T00:00:00+08:00</updated>
+    <id>http://mindumper.com/blog/2013/07/08/lua-oop</id>
+    <content type="html"><![CDATA[<h2>概述</h2>
+
+<p>Lua 并未定位于面向对象语言，但其强大的元编程思想使之可以直接定义类对象。</p>
+
+<p>Lua 的元表为面向对象编程提供了有力支持，表的行为可以通过为其指定元表自定义实现。例如，访问表中不存在的字段时，解释器会查找名为 <code>__index</code> 的元方法，如果 <code>__index</code> 是一个表，解释器将从该表中查找字段；如果 <code>__index</code> 是一个函数，解释器会调用该函数；如果 <code>__index</code> 不存在，则返回 <code>nil</code>。</p>
+
+<h2>第一种实现</h2>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'>    <span class="n">account</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'>    <span class="n">account</span><span class="p">.</span><span class="n">__index</span> <span class="o">=</span> <span class="n">account</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">function</span> <span class="nc">account</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="n">balance</span><span class="p">)</span>
+</span><span class='line'>        <span class="kd">local</span> <span class="n">acnt</span> <span class="o">=</span> <span class="p">{}</span>             <span class="c1">-- our new object</span>
+</span><span class='line'>        <span class="nb">setmetatable</span><span class="p">(</span><span class="n">acnt</span><span class="p">,</span> <span class="n">account</span><span class="p">)</span> <span class="c1">-- make account handle lookup</span>
+</span><span class='line'>        <span class="n">acnt</span><span class="p">.</span><span class="n">balance</span> <span class="o">=</span> <span class="n">balance</span>      <span class="c1">-- initialize our object</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">acnt</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">function</span> <span class="nf">account</span><span class="p">:</span><span class="n">withdraw</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">self</span><span class="p">.</span><span class="n">balance</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">balance</span> <span class="o">-</span> <span class="n">amount</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">-- create and use an account</span>
+</span><span class='line'>    <span class="n">acc</span> <span class="o">=</span> <span class="n">account</span><span class="p">.</span><span class="n">create</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">acc</span><span class="p">:</span><span class="n">withdraw</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>account</code> 是一个表，只包含一个字段 <code>balance</code>。<code>acc</code> 也是一个表，由于在 <code>account.create</code> 中将 <code>account</code> 指定为其元表（原型），且该原型的 <code>__index</code> 元方法为 <code>account</code>。因此在访问 <code>acc:withdraw()</code> 时，<code>acc</code> 没有 <code>withdraw()</code>，解释器访问 <code>acc</code> 的 <code>__index</code>（即 <code>account</code> 的 <code>__index</code>：<code>account</code>），因此实际访问的是 <code>account:withdraw()</code> 函数。从面向对象的角度，<code>acc</code> 成为 <code>account</code> 的一个实例。</p>
+
+<h2>第二种实现（推荐）</h2>
+
+<p>先从使用方式开始看：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'>    <span class="n">account</span> <span class="o">=</span> <span class="n">class</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="n">acc</span><span class="p">,</span> <span class="n">balance</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">acc</span><span class="p">.</span><span class="n">balance</span> <span class="o">=</span> <span class="n">balance</span>
+</span><span class='line'>        <span class="k">end</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">function</span> <span class="nf">account</span><span class="p">:</span><span class="n">withdraw</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">self</span><span class="p">.</span><span class="n">balance</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">balance</span> <span class="o">-</span> <span class="n">amount</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">-- can create an account using call notation!</span>
+</span><span class='line'>    <span class="n">acc</span> <span class="o">=</span> <span class="n">account</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">acc</span><span class="p">:</span><span class="n">withdraw</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>account</code> 作为 <code>class()</code> 函数的返回值，其实例化过程更接近面向对象的写法，<code>acc = account(1000)</code> 像是一次构造函数调用。</p>
+
+<p>再看一个继承的示例：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'>    <span class="n">animal</span> <span class="o">=</span> <span class="n">class</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+</span><span class='line'>       <span class="n">a</span><span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+</span><span class='line'>    <span class="k">end</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">function</span> <span class="nf">animal</span><span class="p">:</span><span class="n">__tostring</span><span class="p">()</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">self</span><span class="p">.</span><span class="n">name</span> <span class="o">..</span> <span class="s1">&#39;</span><span class="s">: &#39;</span> <span class="o">..</span> <span class="n">self</span><span class="p">:</span><span class="n">speak</span><span class="p">()</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">dog</span> <span class="o">=</span> <span class="n">class</span><span class="p">(</span><span class="n">animal</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">function</span> <span class="nf">dog</span><span class="p">:</span><span class="n">speak</span><span class="p">()</span>
+</span><span class='line'>      <span class="k">return</span> <span class="s1">&#39;</span><span class="s">bark&#39;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">cat</span> <span class="o">=</span> <span class="n">class</span><span class="p">(</span><span class="n">animal</span><span class="p">,</span> <span class="k">function</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">breed</span><span class="p">)</span>
+</span><span class='line'>             <span class="n">animal</span><span class="p">.</span><span class="n">init</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>  <span class="c1">-- must init base!</span>
+</span><span class='line'>             <span class="n">c</span><span class="p">.</span><span class="n">breed</span> <span class="o">=</span> <span class="n">breed</span>
+</span><span class='line'>          <span class="k">end</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">function</span> <span class="nf">cat</span><span class="p">:</span><span class="n">speak</span><span class="p">()</span>
+</span><span class='line'>      <span class="k">return</span> <span class="s1">&#39;</span><span class="s">meow&#39;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">lion</span> <span class="o">=</span> <span class="n">class</span><span class="p">(</span><span class="n">cat</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">function</span> <span class="nf">lion</span><span class="p">:</span><span class="n">speak</span><span class="p">()</span>
+</span><span class='line'>      <span class="k">return</span> <span class="s1">&#39;</span><span class="s">roar&#39;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">fido</span> <span class="o">=</span> <span class="n">dog</span><span class="p">(</span><span class="s1">&#39;</span><span class="s">Fido&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">felix</span> <span class="o">=</span> <span class="n">cat</span><span class="p">(</span><span class="s1">&#39;</span><span class="s">Felix&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="s">Tabby&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">leo</span> <span class="o">=</span> <span class="n">lion</span><span class="p">(</span><span class="s1">&#39;</span><span class="s">Leo&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="s">African&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>该例中，<code>animal</code>/<code>dog</code>/<code>cat</code>/<code>lion</code> 的继承关系比较清晰，<code>animal</code> 的 <code>__tostring</code> 元方法供 <code>tostring()</code> 访问。</p>
+
+<p>接下来了解 <code>class</code> 的实现：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'>    <span class="k">function</span> <span class="nf">class</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">init</span><span class="p">)</span>
+</span><span class='line'>        <span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="p">{}</span>    <span class="c1">-- a new class instance</span>
+</span><span class='line'>        <span class="k">if</span> <span class="ow">not</span> <span class="n">init</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">base</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;</span><span class="s">function&#39;</span> <span class="k">then</span>
+</span><span class='line'>            <span class="n">init</span> <span class="o">=</span> <span class="n">base</span>
+</span><span class='line'>            <span class="n">base</span> <span class="o">=</span> <span class="kc">nil</span>
+</span><span class='line'>        <span class="k">elseif</span> <span class="nb">type</span><span class="p">(</span><span class="n">base</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;</span><span class="s">table&#39;</span> <span class="k">then</span>
+</span><span class='line'>            <span class="c1">-- our new class is a shallow copy of the base class!</span>
+</span><span class='line'>            <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">v</span> <span class="k">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">base</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>                <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+</span><span class='line'>            <span class="k">end</span>
+</span><span class='line'>            <span class="n">c</span><span class="p">.</span><span class="n">_base</span> <span class="o">=</span> <span class="n">base</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>        <span class="c1">-- the class will be the metatable for all its objects,</span>
+</span><span class='line'>        <span class="c1">-- and they will look up their methods in it.</span>
+</span><span class='line'>        <span class="n">c</span><span class="p">.</span><span class="n">__index</span> <span class="o">=</span> <span class="n">c</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">-- expose a constructor which can be called by &lt;classname&gt;(&lt;args&gt;)</span>
+</span><span class='line'>        <span class="kd">local</span> <span class="n">mt</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'>        <span class="n">mt</span><span class="p">.</span><span class="n">__call</span> <span class="o">=</span> <span class="k">function</span><span class="p">(</span><span class="n">class_tbl</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</span><span class='line'>            <span class="kd">local</span> <span class="n">obj</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'>            <span class="nb">setmetatable</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">init</span> <span class="k">then</span>
+</span><span class='line'>                <span class="n">init</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">else</span>
+</span><span class='line'>                <span class="c1">-- make sure that any stuff from the base class is initialized!</span>
+</span><span class='line'>                <span class="k">if</span> <span class="n">base</span> <span class="ow">and</span> <span class="n">base</span><span class="p">.</span><span class="n">init</span> <span class="k">then</span>
+</span><span class='line'>                    <span class="n">base</span><span class="p">.</span><span class="n">init</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</span><span class='line'>                <span class="k">end</span>
+</span><span class='line'>            <span class="k">end</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">obj</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>        <span class="n">c</span><span class="p">.</span><span class="n">init</span> <span class="o">=</span> <span class="n">init</span>
+</span><span class='line'>        <span class="n">c</span><span class="p">.</span><span class="n">is_a</span> <span class="o">=</span> <span class="k">function</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">cls</span><span class="p">)</span>
+</span><span class='line'>            <span class="kd">local</span> <span class="n">m</span> <span class="o">=</span> <span class="nb">getmetatable</span><span class="p">(</span><span class="n">self</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">while</span> <span class="n">m</span> <span class="k">do</span>
+</span><span class='line'>                <span class="k">if</span> <span class="n">m</span> <span class="o">==</span> <span class="n">cls</span> <span class="k">then</span> <span class="k">return</span> <span class="kc">true</span> <span class="k">end</span>
+</span><span class='line'>                <span class="n">m</span> <span class="o">=</span> <span class="n">m</span><span class="p">.</span><span class="n">_base</span>
+</span><span class='line'>            <span class="k">end</span>
+</span><span class='line'>            <span class="k">return</span> <span class="kc">false</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>        <span class="nb">setmetatable</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">mt</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">c</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>class()</code> 函数可支持两个可选参数：<code>base</code>、<code>init</code>，<code>base</code> 为基类（表），用于实现继承、复制；<code>init</code> 为初始化函数，即 <em>构造函数</em>。需要注意的是，子类的初始化函数需要调用父类的初始化函数，以完成正确继承（毕竟 Lua 自身没有提供面向对象的继承机制）。</p>
+
+<p><code>class()</code> 使用两个技巧：</p>
+
+<ul>
+<li>支持 <em>构造函数</em>：通过指定元方法 <code>__call</code> 实现。</li>
+<li>支持 <em>继承</em>：通过复制基类字段到子类中，此方法比通过 <code>__index</code> 实现效率更高。</li>
+</ul>
+
+
+<p>参考：<a href="http://lua-users.org/wiki/SimpleLuaClasses">原文</a> 在这里。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Lua 编程规范]]></title>
